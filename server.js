@@ -55,6 +55,8 @@ async function viewAll() {
         if(err) throw err;
 
         console.log(res)
+
+        prompt();
     })
 }
 
@@ -151,42 +153,48 @@ async function removeEmployee() {
     connection.query("SELECT * FROM employeeInfo", function(err,res){
         if(err) throw err;
 
-        console.log(res)
+        
+ 
+    inquirer.prompt([
+        {
+            type: "list",
+            name: "remove",
+            message: "Who would you like to remove?",
+            choices: function() {
+                var choiceArray = [];
+                for (var i = 0; i < res.length; i++) {
+                  choiceArray.push(res[i].first_name);
+                }
+                return choiceArray;
+              },
+        }
+    ])
+    .then(function(answer) {
+        connection.query(
+            "DELETE FROM employeeInfo WHERE ?",
+            {
+                first_name: answer.remove
+            },
+            function(err) {
+                if (err) throw err;
+                console.log("removed successfully");
+                // re-prompt
+                prompt();
+              }
+        )
     })
-    // inquirer.prompt([
-    //     {
-    //         type: "list",
-    //         name: "remove",
-    //         message: "Who would you like to remove?",
-    //         choices: function() {
-    //             var choiceArray = [];
-    //             for (var i = 0; i < results.length; i++) {
-    //               choiceArray.push(results[i].first_name);
-    //             }
-    //             return choiceArray;
-    //           },
-    //     }
-    // ])
-    // .then(function(answer) {
-    //     connection.query(
-    //         "DELETE FROM employeeInfo WHERE ?",
-    //         {
-    //             first_name: answer.remove
-    //         },
-    //         function(err) {
-    //             if (err) throw err;
-    //             console.log("added successfully");
-    //             // re-prompt
-    //             prompt();
-    //           }
-    //     )
-    // })
+})
     
 }
 
 //user function wants to UPDATE Employee ROLE
 
 //user function wants to UPDATE Employee MANAGER
+
+//user function to end
+async function end() {
+    connection.end();
+}
 
 //idk probably run a switch statement to switch between them all
 async function select(answers) {
@@ -242,8 +250,9 @@ async function select(answers) {
 
         default:
             //idk what you did but it broke the code
-            console.log("Thank you for accessing the Database. hit control or command C to exit");
-    }
+            console.log("Thank you for accessing the Database.");
+            end();
+        }
 }
 
 //actually run the thing
