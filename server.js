@@ -61,6 +61,45 @@ async function viewAll() {
 }
 
 //user function wants to view all employees by department
+async function viewDepartment() {
+    //grab everyone first
+    // connection.query("SELECT * FROM employeeInfo", function(err,res){
+    //     if(err) throw err;
+
+    //ask what department they want to view
+    inquirer.prompt([
+        {
+            type: "list",
+            name: "department",
+            message: "What department would you like to view?",
+            choices: [
+                "Sales",
+                "Finance",
+                "Engineering",
+                "Marketing"
+            ]
+            // choices: function() {
+            //     var choiceArray = [];
+            //     for (var i = 0; i < res.length; i++) {
+            //       choiceArray.push(res[i].department);
+            //     }
+            //     return choiceArray;
+            //   },
+            
+        }
+    ])
+    .then(function(answer){
+        connection.query(`SELECT * FROM employeeInfo WHERE department = "${answer.department}"`, function(err,res){
+            if(err) throw err;
+    
+            console.log(res)
+    
+            prompt();
+        })
+    })
+}
+    
+
 
 //user function wants to view all employees by manager
 
@@ -153,8 +192,7 @@ async function removeEmployee() {
     connection.query("SELECT * FROM employeeInfo", function(err,res){
         if(err) throw err;
 
-        
- 
+    //ask which employee they want to remove
     inquirer.prompt([
         {
             type: "list",
@@ -169,6 +207,7 @@ async function removeEmployee() {
               },
         }
     ])
+    //now actually delete them
     .then(function(answer) {
         connection.query(
             "DELETE FROM employeeInfo WHERE ?",
@@ -209,7 +248,7 @@ async function select(answers) {
         //view Department
         case ("View All Employees by Department"):
             console.log("View All Employees by Department");
-
+            viewDepartment();
             break;
 
         //view Manager
