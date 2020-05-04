@@ -1,4 +1,27 @@
+const mysql = require("mysql")
 const inquirer = require("inquirer");
+
+//creat connection for sql database
+
+const connection = mysql.createConnection({
+    host: "localhost",
+
+    port: 3306,
+
+    user: "root",
+
+    password: "joychen5069",
+    database: "employee_db"
+
+
+});
+
+//connect to mysql server and sql database 
+connection.connect(function (err) {
+    if (err) throw err;
+
+    prompt();
+})
 
 //prompt question about what the user wants to do
 async function prompt() {
@@ -18,7 +41,11 @@ async function prompt() {
             ]
         }
     ])
-    }
+    .then(function(answer){
+        console.log(answer.action)
+        select(answer)
+    })
+}
 
 
 //user function wants to view all employees
@@ -28,6 +55,87 @@ async function prompt() {
 //user function wants to view all employees by manager
 
 //user function wants to ADD EMPLOYEE
+async function addEmployee() {
+    //ask the key questions
+    await inquirer.prompt([
+        {
+            type: "input",
+            name: "first",
+            message: "What is the Employee's first name?"
+
+        },
+
+        {
+            type: "input",
+            name: "last",
+            message: "What is the Employee's last name?"
+
+        },
+
+        {
+            type: "input",
+            name: "first",
+            message: "What is the Employee's first name?"
+
+        },
+
+        {
+            type: "list",
+            name: "role",
+            message: "What is the Employee's role?",
+            choices: [
+                "Sales Lead",
+                "Sales Person",
+                "Lead Engineer",
+                "Account Manager",
+                "Accountant",
+                "Legal Team Lead",
+                "Lawyer"
+            ]
+
+        },
+
+        {
+            type: "list",
+            name: "department",
+            message: "What is the Employee's department?",
+            choices: [
+                "Sales",
+                "Engineering",
+                "Finance",
+                "Legal",
+            ]
+
+        },
+
+        {
+            type: "input",
+            name: "manager",
+            message: "Who is the employee's manager?"
+
+        }
+    ])
+    .then(function(answer){
+        connection.query(
+            "INSERT INTO employeeInfo SET ?",
+            {
+                first_name: answer.first,
+                last_name: answer.last,
+                title: answer.role,
+                department: answer.department,
+                manager: answer.manager
+            },
+            function(err) {
+                if (err) throw err;
+                console.log("added successfully");
+                // re-prompt
+                prompt();
+              }
+        )
+    })
+
+
+}
 
 //user function wants to REMOVE EMPLOYEE
 
@@ -59,44 +167,43 @@ async function select(answers) {
 
         //Add employee
         case ("Add Employee"):
-            confirm.log("Add Employee");
-
+            console.log("Add Employee");
+            addEmployee();
             break;
 
         //Remove employee
         case ("Remove Employee"):
-            confirm.log("Remove Employee");
+            console.log("Remove Employee");
 
             break;
 
         //Update Role
         case ("Update Employee Role"):
-            confirm.log("Update Employee Role");
+            console.log("Update Employee Role");
 
             break;
 
         //Update Manager
         case ("Update Employee Manager"):
-            confirm.log("Update Employee Manager");
+            console.log("Update Employee Manager");
 
             break;
 
         //Add employee
         case ("Add Employee"):
-            confirm.log("Add Employee");
+            console.log("Add Employee");
 
             break;
 
         default:
             //idk what you did but it broke the code
             console.log("Your team.html has been written")
-            write();
             break;
     }
 }
 
 //actually run the thing
-prompt()
-    .then(function(answers) {
-        select(answers);
-    })
+// prompt()
+//     .then(function (answers) {
+//         select(answers);
+//     })
