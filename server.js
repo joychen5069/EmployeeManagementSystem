@@ -37,7 +37,8 @@ async function prompt() {
                 "Add Employee",
                 "Remove Employee",
                 "Update Employee Role",
-                "Update Employee Manager"
+                "Update Employee Manager",
+                "Finished"
             ]
         }
     ])
@@ -49,6 +50,13 @@ async function prompt() {
 
 
 //user function wants to view all employees
+async function viewAll() {
+    connection.query("SELECT * FROM employeeInfo", function(err,res){
+        if(err) throw err;
+
+        console.log(res)
+    })
+}
 
 //user function wants to view all employees by department
 
@@ -138,6 +146,43 @@ async function addEmployee() {
 }
 
 //user function wants to REMOVE EMPLOYEE
+async function removeEmployee() {
+    //read the employees first
+    connection.query("SELECT * FROM employeeInfo", function(err,res){
+        if(err) throw err;
+
+        console.log(res)
+    })
+    // inquirer.prompt([
+    //     {
+    //         type: "list",
+    //         name: "remove",
+    //         message: "Who would you like to remove?",
+    //         choices: function() {
+    //             var choiceArray = [];
+    //             for (var i = 0; i < results.length; i++) {
+    //               choiceArray.push(results[i].first_name);
+    //             }
+    //             return choiceArray;
+    //           },
+    //     }
+    // ])
+    // .then(function(answer) {
+    //     connection.query(
+    //         "DELETE FROM employeeInfo WHERE ?",
+    //         {
+    //             first_name: answer.remove
+    //         },
+    //         function(err) {
+    //             if (err) throw err;
+    //             console.log("added successfully");
+    //             // re-prompt
+    //             prompt();
+    //           }
+    //     )
+    // })
+    
+}
 
 //user function wants to UPDATE Employee ROLE
 
@@ -150,7 +195,7 @@ async function select(answers) {
         //view ALL
         case ("View All Employees"):
             console.log("View All Employees");
-
+            viewAll();
             break;
 
         //view Department
@@ -174,7 +219,7 @@ async function select(answers) {
         //Remove employee
         case ("Remove Employee"):
             console.log("Remove Employee");
-
+            removeEmployee();
             break;
 
         //Update Role
@@ -197,8 +242,7 @@ async function select(answers) {
 
         default:
             //idk what you did but it broke the code
-            console.log("Your team.html has been written")
-            break;
+            console.log("Thank you for accessing the Database. hit control or command C to exit");
     }
 }
 
