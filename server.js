@@ -62,18 +62,22 @@ async function viewAll() {
 
 //user function wants to view all employees by department
 async function viewDepartment() {
+    //pull table to view all departments
+    connection.query("SELECT * FROM employeeInfo", function (err, res) {
+        if (err) throw err;
     //ask what department they want to view
     inquirer.prompt([
         {
             type: "list",
             name: "department",
             message: "What department would you like to view?",
-            choices: [
-                "Sales",
-                "Finance",
-                "Engineering",
-                "Marketing"
-            ]
+            choices: function () {
+                var choiceArray = [];
+                for (var i = 0; i < res.length; i++) {
+                    choiceArray.push(res[i].department);
+                }
+                return choiceArray;
+            },
 
         }
     ])
@@ -86,6 +90,7 @@ async function viewDepartment() {
                 prompt();
             })
         })
+    })
 }
 
 
@@ -156,6 +161,7 @@ function addEmployee() {
                 name: "role",
                 message: "What is the Employee's role?",
                 choices: [
+                    "Add Role",
                     "Sales Lead",
                     "Sales Person",
                     "Lead Engineer",
@@ -172,6 +178,7 @@ function addEmployee() {
                 name: "department",
                 message: "What is the Employee's department?",
                 choices: [
+                    "Add Department",
                     "Sales",
                     "Engineering",
                     "Finance",
@@ -257,12 +264,24 @@ async function removeEmployee() {
                 inquirer.prompt([
                     {
                         type: "list",
-                        name: "remove",
-                        message: "Who would you like to remove?",
+                        name: "first",
+                        message: "What is the first name of the person you would you like to remove?",
                         choices: function () {
                             var choiceArray = [];
                             for (var i = 0; i < res.length; i++) {
                                 choiceArray.push(res[i].first_name);
+                            }
+                            return choiceArray;
+                        },
+                    },
+                    {
+                        type: "list",
+                        name: "last",
+                        message: "What is the last name of the person you would you like to remove?",
+                        choices: function () {
+                            var choiceArray = [];
+                            for (var i = 0; i < res.length; i++) {
+                                choiceArray.push(res[i].last_name);
                             }
                             return choiceArray;
                         },
@@ -271,10 +290,11 @@ async function removeEmployee() {
                     //now actually delete them
                     .then(function (answer) {
                         connection.query(
-                            "DELETE FROM employeeInfo WHERE ?",
-                            {
-                                first_name: answer.remove
-                            },
+                            `DELETE FROM employeeInfo WHERE first_name = "${answer.first}" AND last_name = "${answer.last}"`,
+                            // {
+                            //     first_name: answer.remove,
+                            //     last_name: answer.remove
+                            // },
                             function (err) {
                                 if (err) throw err;
                                 console.log("removed successfully");
@@ -288,6 +308,32 @@ async function removeEmployee() {
         }
 
 //user function wants to UPDATE Employee ROLE
+async function updateRole() {
+    //pull all the employees first
+    connection.query("SELECT * FROM employeeInfo", function (err, res) {
+        if (err) throw err
+
+        //ask who they want to modify
+        inquirer.prompt([
+            {
+                type: "list",
+                name: "update",
+                message: "Which employee would you like to update the role of?",
+                choices: function () {
+                    var choiceArray = [];
+                    for (var i = 0; i < res.length; i++) {
+                        choiceArray.push(res[i].first_name + " " +  res[i].last_name);
+                    }
+                    return choiceArray;
+                },
+            }
+        ])
+        //now modify them
+        // .then(function(answer) {
+        //     connection.query(`SELECT * FROM employeeInfo WHERE first_name`)
+        // })
+    })
+}
 
 //user function wants to UPDATE Employee MANAGER
 
@@ -333,7 +379,7 @@ async function select(answers) {
                 //Update Role
                 case ("Update Employee Role"):
                     console.log("Update Employee Role");
-
+                    updateRole();
                     break;
 
                 //Update Manager

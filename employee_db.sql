@@ -14,6 +14,25 @@ CREATE TABLE employeeInfo(
     PRIMARY KEY (id)
 );
 
--- example insert
 INSERT INTO employeeInfo (first_name, last_name, title, department, manager)
-VALUES ("Joe", "Exotic","Software Engineer", "Engineering","Carole Baskins");
+VALUES ("Joe", "Exotic","Software Dev", "Engineering","Carole Baskins");
+
+CREATE TABLE departmentInfo(
+	id INT NOT NULL auto_increment,
+    name VARCHAR(30),
+    PRIMARY KEY (id)
+);
+    
+INSERT INTO departmentInfo(name)
+VALUES("Accounting"),("Finance"),("Engineering"),("Sales"),("legal");
+
+CREATE TABLE roleInfo(
+	id INT NOT NULL AUTO_INCREMENT,
+    title VARCHAR(30),
+    salary DECIMAL,
+    department_id INT NOT NULL,
+    PRIMARY KEY (id)
+    );
+
+INSERT INTO roleInfo(title, salary, department_id)
+VALUES("Legal Team", 80000, 4)
