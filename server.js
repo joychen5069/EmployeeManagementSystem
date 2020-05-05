@@ -382,6 +382,87 @@ async function updateRole() {
 }
 
 //user function wants to UPDATE Employee MANAGER
+async function updateManager() {
+    //pull all the employees first
+    connection.query("SELECT * FROM employeeInfo", function (err, res) {
+        if (err) throw err
+
+        //ask who they want to modify
+        inquirer.prompt([
+            {
+
+                type: "list",
+                name: "name",
+                message: "Which employee would you like to update the manager of?",
+                choices: function () {
+                    var choiceArray = [];
+                    for (var i = 0; i < res.length; i++) {
+                        choiceArray.push(res[i].first_name + " " + res[i].last_name);
+                    }
+                    return choiceArray;
+                }
+            },
+            {
+                type: "list",
+                name: "manager",
+                message: "Who would you like to update the manager to be?",
+                choices: function () {
+                    var choiceArray = ["Add Manager"];
+                    for (var i = 0; i < res.length; i++) {
+                        choiceArray.push(res[i].manager);
+                    }
+                    return choiceArray;
+                }
+
+            }
+        ])
+            // now modify them
+            .then(function (answer) {
+                //split the name
+                let fullName = answer.name;
+                console.log(fullName);
+                let splitName = fullName.split(" ");
+                console.log(splitName[0]);
+
+                if (answer.manager === "Add Manager") {
+                    inquirer.prompt([
+                        {
+                            type: "input",
+                            name: "newManager",
+                            message: "Who is the new manager?"
+                        }
+                    ])
+                        .then(function (result) {
+                            connection.query(
+                                `UPDATE employeeInfo SET manager = "${result.newManager}" WHERE first_name = "${splitName[0]}" AND last_name = "${splitName[1]}"`,
+                                  
+                                function (err) {
+                                    if (err) throw err;
+                                    console.log("added successfully");
+                                    // re-prompt
+                                    prompt();
+                                }         
+                            )
+                        })
+
+                }
+                else {
+                    connection.query(
+                        `UPDATE employeeInfo SET manager = "${answer.manager}" WHERE first_name = "${splitName[0]}" and last_name = "${splitName[1]}"`,
+                      
+                        function (err) {
+                            if (err) throw err;
+                            console.log("added successfully");
+                            // re-prompt
+                            prompt();
+                        }
+                    )
+                }
+
+                
+            })
+    })
+}
 
 //user function to end
 async function end() {
@@ -431,7 +512,7 @@ async function select(answers) {
         //Update Manager
         case ("Update Employee Manager"):
             console.log("Update Employee Manager");
-
+            updateManager();
             break;
 
         //Add employee
