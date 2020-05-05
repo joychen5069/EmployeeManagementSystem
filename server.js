@@ -65,31 +65,31 @@ async function viewDepartment() {
     //pull table to view all departments
     connection.query("SELECT * FROM employeeInfo", function (err, res) {
         if (err) throw err;
-    //ask what department they want to view
-    inquirer.prompt([
-        {
-            type: "list",
-            name: "department",
-            message: "What department would you like to view?",
-            choices: function () {
-                var choiceArray = [];
-                for (var i = 0; i < res.length; i++) {
-                    choiceArray.push(res[i].department);
-                }
-                return choiceArray;
-            },
+        //ask what department they want to view
+        inquirer.prompt([
+            {
+                type: "list",
+                name: "department",
+                message: "What department would you like to view?",
+                choices: function () {
+                    var choiceArray = [];
+                    for (var i = 0; i < res.length; i++) {
+                        choiceArray.push(res[i].department);
+                    }
+                    return choiceArray;
+                },
 
-        }
-    ])
-        .then(function (answer) {
-            connection.query(`SELECT * FROM employeeInfo WHERE department = "${answer.department}"`, function (err, res) {
-                if (err) throw err;
+            }
+        ])
+            .then(function (answer) {
+                connection.query(`SELECT * FROM employeeInfo WHERE department = "${answer.department}"`, function (err, res) {
+                    if (err) throw err;
 
-                console.table(res)
+                    console.table(res)
 
-                prompt();
+                    prompt();
+                })
             })
-        })
     })
 }
 
@@ -256,47 +256,47 @@ function addEmployee() {
 
 //user function wants to REMOVE EMPLOYEE
 async function removeEmployee() {
-            //read the employees first
-            connection.query("SELECT * FROM employeeInfo", function (err, res) {
-                if (err) throw err;
+    //read the employees first
+    connection.query("SELECT * FROM employeeInfo", function (err, res) {
+        if (err) throw err;
 
-                //ask which employee they want to remove
-                inquirer.prompt([
-                    {
-                        type: "list",
-                        name: "name",
-                        message: "Who would you like to remove?",
-                        choices: function () {
-                            var choiceArray = [];
-                            for (var i = 0; i < res.length; i++) {
-                                choiceArray.push(res[i].first_name + " " +  res[i].last_name);
-                            }
-                            return choiceArray;
-                        },
+        //ask which employee they want to remove
+        inquirer.prompt([
+            {
+                type: "list",
+                name: "name",
+                message: "Who would you like to remove?",
+                choices: function () {
+                    var choiceArray = [];
+                    for (var i = 0; i < res.length; i++) {
+                        choiceArray.push(res[i].first_name + " " + res[i].last_name);
                     }
-                ])
-                    //now actually delete them
-                    .then(function (answer) {
+                    return choiceArray;
+                },
+            }
+        ])
+            //now actually delete them
+            .then(function (answer) {
 
-                        const fullName = answer.remove
-                        console.log(fullName)
-                        const remove = fullName.split(" ")
-                        console.log(remove[0])
+                let fullName = answer.remove
+                console.log(fullName)
+                let remove = fullName.split(" ")
+                console.log(remove[0])
 
-                        connection.query(
-                            `DELETE FROM employeeInfo WHERE first_name = "${remove[0]}" AND last_name = "${remove[1]}"`,
-                           
-                            function (err) {
-                                if (err) throw err;
-                                console.log("removed successfully");
-                                // re-prompt
-                                prompt();
-                            }
-                        )
-                    })
+                connection.query(
+                    `DELETE FROM employeeInfo WHERE first_name = "${remove[0]}" AND last_name = "${remove[1]}"`,
+
+                    function (err) {
+                        if (err) throw err;
+                        console.log("removed successfully");
+                        // re-prompt
+                        prompt();
+                    }
+                )
             })
+    })
 
-        }
+}
 
 //user function wants to UPDATE Employee ROLE
 async function updateRole() {
@@ -307,22 +307,77 @@ async function updateRole() {
         //ask who they want to modify
         inquirer.prompt([
             {
+
                 type: "list",
-                name: "update",
+                name: "name",
                 message: "Which employee would you like to update the role of?",
                 choices: function () {
                     var choiceArray = [];
                     for (var i = 0; i < res.length; i++) {
-                        choiceArray.push(res[i].first_name + " " +  res[i].last_name);
+                        choiceArray.push(res[i].first_name + " " + res[i].last_name);
                     }
                     return choiceArray;
-                },
+                }
+            },
+            {
+                type: "list",
+                name: "role",
+                message: "What would you like to update the role to be?",
+                choices: function () {
+                    var choiceArray = ["Add Role"];
+                    for (var i = 0; i < res.length; i++) {
+                        choiceArray.push(res[i].title);
+                    }
+                    return choiceArray;
+                }
+
             }
         ])
-        //now modify them
-        // .then(function(answer) {
-        //     connection.query(`SELECT * FROM employeeInfo WHERE first_name`)
-        // })
+            // now modify them
+            .then(function (answer) {
+                //split the name
+                let fullName = answer.name;
+                console.log(fullName);
+                let splitName = fullName.split(" ");
+                console.log(splitName[0]);
+
+                if (answer.role === "Add Role") {
+                    inquirer.prompt([
+                        {
+                            type: "input",
+                            name: "newRole",
+                            message: "What is the new role?"
+                        }
+                    ])
+                        .then(function (result) {
+                            connection.query(
+                                `UPDATE employeeInfo SET title = "${result.newRole}" WHERE first_name = "${splitName[0]}" AND last_name = "${splitName[1]}"`,
+                                // [ {title: result.newRole}  ]   
+                                function (err) {
+                                    if (err) throw err;
+                                    console.log("added successfully");
+                                    // re-prompt
+                                    prompt();
+                                }         
+                            )
+                        })
+
+                }
+                else {
+                    connection.query(
+                        `UPDATE employeeInfo SET title = "${answer.role}" WHERE first_name = "${splitName[0]}" and last_name = "${splitName[1]}"`,
+                        // [ {title: answer.role}     ]
+                        function (err) {
+                            if (err) throw err;
+                            console.log("added successfully");
+                            // re-prompt
+                            prompt();
+                        }
+                    )
+                }
+
+                
+            })
     })
 }
 
@@ -330,67 +385,67 @@ async function updateRole() {
 
 //user function to end
 async function end() {
-            connection.end();
-        }
+    connection.end();
+}
 
 //idk probably run a switch statement to switch between them all
 async function select(answers) {
-            switch (answers.action) {
+    switch (answers.action) {
 
-                //view ALL
-                case ("View All Employees"):
-                    console.log("View All Employees");
-                    viewAll();
-                    break;
+        //view ALL
+        case ("View All Employees"):
+            console.log("View All Employees");
+            viewAll();
+            break;
 
-                //view Department
-                case ("View All Employees by Department"):
-                    console.log("View All Employees by Department");
-                    viewDepartment();
-                    break;
+        //view Department
+        case ("View All Employees by Department"):
+            console.log("View All Employees by Department");
+            viewDepartment();
+            break;
 
-                //view Manager
-                case ("View All Employees by Manager"):
-                    console.log("View All Employees by Manager");
-                    viewManager();
-                    break;
+        //view Manager
+        case ("View All Employees by Manager"):
+            console.log("View All Employees by Manager");
+            viewManager();
+            break;
 
-                //Add employee
-                case ("Add Employee"):
-                    console.log("Add Employee");
-                    addEmployee();
-                    break;
+        //Add employee
+        case ("Add Employee"):
+            console.log("Add Employee");
+            addEmployee();
+            break;
 
-                //Remove employee
-                case ("Remove Employee"):
-                    console.log("Remove Employee");
-                    removeEmployee();
-                    break;
+        //Remove employee
+        case ("Remove Employee"):
+            console.log("Remove Employee");
+            removeEmployee();
+            break;
 
-                //Update Role
-                case ("Update Employee Role"):
-                    console.log("Update Employee Role");
-                    updateRole();
-                    break;
+        //Update Role
+        case ("Update Employee Role"):
+            console.log("Update Employee Role");
+            updateRole();
+            break;
 
-                //Update Manager
-                case ("Update Employee Manager"):
-                    console.log("Update Employee Manager");
+        //Update Manager
+        case ("Update Employee Manager"):
+            console.log("Update Employee Manager");
 
-                    break;
+            break;
 
-                //Add employee
-                case ("Add Employee"):
-                    console.log("Add Employee");
+        //Add employee
+        case ("Add Employee"):
+            console.log("Add Employee");
 
-                    break;
+            break;
 
-                default:
-                    //idk what you did but it broke the code
-                    console.log("Thank you for accessing the Database.");
-                    end();
-            }
-        }
+        default:
+            //idk what you did but it broke the code
+            console.log("Thank you for accessing the Database.");
+            end();
+    }
+}
 
 //actually run the thing
 // prompt()
