@@ -264,24 +264,12 @@ async function removeEmployee() {
                 inquirer.prompt([
                     {
                         type: "list",
-                        name: "first",
-                        message: "What is the first name of the person you would you like to remove?",
+                        name: "name",
+                        message: "Who would you like to remove?",
                         choices: function () {
                             var choiceArray = [];
                             for (var i = 0; i < res.length; i++) {
-                                choiceArray.push(res[i].first_name);
-                            }
-                            return choiceArray;
-                        },
-                    },
-                    {
-                        type: "list",
-                        name: "last",
-                        message: "What is the last name of the person you would you like to remove?",
-                        choices: function () {
-                            var choiceArray = [];
-                            for (var i = 0; i < res.length; i++) {
-                                choiceArray.push(res[i].last_name);
+                                choiceArray.push(res[i].first_name + " " +  res[i].last_name);
                             }
                             return choiceArray;
                         },
@@ -289,12 +277,15 @@ async function removeEmployee() {
                 ])
                     //now actually delete them
                     .then(function (answer) {
+
+                        const fullName = answer.remove
+                        console.log(fullName)
+                        const remove = fullName.split(" ")
+                        console.log(remove[0])
+
                         connection.query(
-                            `DELETE FROM employeeInfo WHERE first_name = "${answer.first}" AND last_name = "${answer.last}"`,
-                            // {
-                            //     first_name: answer.remove,
-                            //     last_name: answer.remove
-                            // },
+                            `DELETE FROM employeeInfo WHERE first_name = "${remove[0]}" AND last_name = "${remove[1]}"`,
+                           
                             function (err) {
                                 if (err) throw err;
                                 console.log("removed successfully");
