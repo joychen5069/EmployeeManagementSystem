@@ -89,7 +89,6 @@ async function viewDepartment() {
 }
     
 
-
 //user function wants to view all employees by manager
 async function viewManager() {
     connection.query("SELECT * FROM employeeInfo", function(err,res){
