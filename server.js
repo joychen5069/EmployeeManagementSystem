@@ -2,7 +2,6 @@ const mysql = require("mysql")
 const inquirer = require("inquirer");
 
 //creat connection for sql database
-
 const connection = mysql.createConnection({
     host: "localhost",
 
@@ -12,19 +11,16 @@ const connection = mysql.createConnection({
 
     password: "joychen5069",
     database: "employee_db"
-
-
 });
 
 //connect to mysql server and sql database 
 connection.connect(function (err) {
     if (err) throw err;
-
-    prompt();
+    initial();
 })
 
 //prompt question about what the user wants to do
-async function prompt() {
+async function initial() {
     return inquirer.prompt([
         {
             type: "list",
@@ -56,7 +52,7 @@ async function viewAll() {
 
         console.table(res)
 
-        prompt();
+        initial();
     })
 }
 
@@ -87,12 +83,11 @@ async function viewDepartment() {
 
                     console.table(res)
 
-                    prompt();
+                    initial();
                 })
             })
     })
 }
-
 
 //user function wants to view all employees by manager
 async function viewManager() {
@@ -121,13 +116,13 @@ async function viewManager() {
 
                     console.table(res)
 
-                    prompt();
+                    initial();
                 })
             })
     })
 }
 
-//user function wants to ADD EMPLOYEE
+//user function wants to ADD EMPLOYEE -- SUPER BROKEN FIX IT
 function addEmployee() {
     //read the employees first
     connection.query("SELECT * FROM employeeInfo", function (err, res) {
@@ -225,7 +220,7 @@ function addEmployee() {
                                     if (err) throw err;
                                     console.log("added successfully");
                                     // re-prompt
-                                    prompt();
+                                    initial();
                                 }
                             )
                         })
@@ -244,7 +239,7 @@ function addEmployee() {
                             if (err) throw err;
                             console.log("added successfully");
                             // re-prompt
-                            prompt();
+                            initial();
                         }
                     )
                 }
@@ -278,7 +273,7 @@ async function removeEmployee() {
             //now actually delete them
             .then(function (answer) {
 
-                let fullName = answer.remove
+                let fullName = answer.name
                 console.log(fullName)
                 let remove = fullName.split(" ")
                 console.log(remove[0])
@@ -290,7 +285,7 @@ async function removeEmployee() {
                         if (err) throw err;
                         console.log("removed successfully");
                         // re-prompt
-                        prompt();
+                        initial();
                     }
                 )
             })
@@ -357,7 +352,7 @@ async function updateRole() {
                                     if (err) throw err;
                                     console.log("added successfully");
                                     // re-prompt
-                                    prompt();
+                                    initial();
                                 }         
                             )
                         })
@@ -371,7 +366,7 @@ async function updateRole() {
                             if (err) throw err;
                             console.log("added successfully");
                             // re-prompt
-                            prompt();
+                            initial();
                         }
                     )
                 }
@@ -440,7 +435,7 @@ async function updateManager() {
                                     if (err) throw err;
                                     console.log("added successfully");
                                     // re-prompt
-                                    prompt();
+                                    initial();
                                 }         
                             )
                         })
@@ -454,7 +449,7 @@ async function updateManager() {
                             if (err) throw err;
                             console.log("added successfully");
                             // re-prompt
-                            prompt();
+                            iniial();
                         }
                     )
                 }
@@ -464,12 +459,8 @@ async function updateManager() {
     })
 }
 
-//user function to end
-async function end() {
-    connection.end();
-}
 
-//idk probably run a switch statement to switch between them all
+//run a switch statement to switch between them all
 async function select(answers) {
     switch (answers.action) {
 
@@ -515,21 +506,11 @@ async function select(answers) {
             updateManager();
             break;
 
-        //Add employee
-        case ("Add Employee"):
-            console.log("Add Employee");
-
-            break;
-
-        default:
+              default:
             //idk what you did but it broke the code
             console.log("Thank you for accessing the Database.");
-            end();
+            connection.end();
     }
 }
 
-//actually run the thing
-// prompt()
-//     .then(function (answers) {
-//         select(answers);
-//     })
+module.exports = initial;
