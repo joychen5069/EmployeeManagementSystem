@@ -54,7 +54,7 @@ async function viewAll() {
     connection.query("SELECT * FROM employeeInfo", function(err,res){
         if(err) throw err;
 
-        console.log(res)
+        console.table(res)
 
         prompt();
     })
@@ -62,10 +62,6 @@ async function viewAll() {
 
 //user function wants to view all employees by department
 async function viewDepartment() {
-    //grab everyone first
-    // connection.query("SELECT * FROM employeeInfo", function(err,res){
-    //     if(err) throw err;
-
     //ask what department they want to view
     inquirer.prompt([
         {
@@ -78,21 +74,14 @@ async function viewDepartment() {
                 "Engineering",
                 "Marketing"
             ]
-            // choices: function() {
-            //     var choiceArray = [];
-            //     for (var i = 0; i < res.length; i++) {
-            //       choiceArray.push(res[i].department);
-            //     }
-            //     return choiceArray;
-            //   },
-            
+                     
         }
     ])
     .then(function(answer){
         connection.query(`SELECT * FROM employeeInfo WHERE department = "${answer.department}"`, function(err,res){
             if(err) throw err;
     
-            console.log(res)
+            console.table(res)
     
             prompt();
         })
@@ -102,11 +91,46 @@ async function viewDepartment() {
 
 
 //user function wants to view all employees by manager
+async function viewManager() {
+    connection.query("SELECT * FROM employeeInfo", function(err,res){
+        if(err) throw err
+
+    //ask what department they want to view
+    inquirer.prompt([
+        {
+            type: "list",
+            name: "manager",
+            message: "Pick a manager to view the employees:",
+               choices: function() {
+                var choiceArray = [];
+                for (var i = 0; i < res.length; i++) {
+                  choiceArray.push(res[i].manager);
+                }
+                return choiceArray;
+              },
+                     
+        }
+    ])
+    .then(function(answer){
+        connection.query(`SELECT * FROM employeeInfo WHERE manager = "${answer.manager}"`, function(err,res){
+            if(err) throw err;
+    
+            console.table(res)
+    
+            prompt();
+        })
+    })
+})
+}
 
 //user function wants to ADD EMPLOYEE
-async function addEmployee() {
+function addEmployee() {
+    //read the employees first
+    connection.query("SELECT * FROM employeeInfo", function(err,res){
+        if(err) throw err;
+
     //ask the key questions
-    await inquirer.prompt([
+     inquirer.prompt([
         {
             type: "input",
             name: "first",
@@ -158,13 +182,34 @@ async function addEmployee() {
         },
 
         {
-            type: "input",
+            type: "list",
             name: "manager",
-            message: "Who is the employee's manager?"
+            message: "Who is the employee's manager?",
+            choices: function() {
+                var choiceArray = ["Add New Manager"];
+                for (var i = 0; i < res.length; i++) {
+                  choiceArray.push(res[i].manager);
+                }
+                return choiceArray;
+              },
 
         }
     ])
+
     .then(function(answer){
+        if (answer.manager === "Add New Manager") {
+            inquirer.prompt([
+                {
+                    type: "input",
+                    name: "newManager",
+                    message: "Who is the manager?"
+                }
+            ])
+            .then(function(answer) {
+                answer.manager = answer.newManager
+            })     
+        }
+        
         connection.query(
             "INSERT INTO employeeInfo SET ?",
             {
@@ -182,7 +227,7 @@ async function addEmployee() {
               }
         )
     })
-
+})
 
 }
 
@@ -254,7 +299,7 @@ async function select(answers) {
         //view Manager
         case ("View All Employees by Manager"):
             console.log("View All Employees by Manager");
-
+            viewManager();
             break;
 
         //Add employee
