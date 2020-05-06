@@ -32,11 +32,11 @@ async function initial() {
                 "View Department Table",
                 "View Role Table",
                 "Add Employee",
-                "Remove Employee",
-                "Update Employee Role",
-                "Update Employee Manager",
                 "Add Department",
                 "Add Role",
+                "Update Employee Role",
+                "Update Employee Manager",
+                "Remove Employee",
                 "Finish"
             ]
         }
@@ -51,9 +51,7 @@ async function initial() {
 async function viewAll() {
     connection.query("SELECT * FROM employeeInfo", function (err, res) {
         if (err) throw err;
-
         console.table(res)
-
         initial();
     })
 }
@@ -75,8 +73,7 @@ async function viewEmpByMan() {
                         choiceArray.push(res[i].manager);
                     }
                     return choiceArray;
-                },
-
+                }
             }
         ])
             .then(function (answer) {
@@ -103,36 +100,28 @@ async function addEmployee() {
                 type: "input",
                 name: "first",
                 message: "What is the Employee's first name?"
-
             },
 
             {
                 type: "input",
                 name: "last",
                 message: "What is the Employee's last name?"
-
-            },
-
-            {
-                type: "input",
-                name: "first",
-                message: "What is the Employee's first name?"
-
             },
 
             {
                 type: "list",
                 name: "role",
                 message: "What is the Employee's role?",
-                choices: function() {
+                choices: function () {
                     choiceArray = [];
                     for (let i = 0; i < res.length; i++) {
                         choiceArray.push(res[i].title)
-                        
+
                     }
                     return choiceArray
                 }
             },
+
             {
                 type: "list",
                 name: "manager",
@@ -140,31 +129,27 @@ async function addEmployee() {
                 choices: [
                     0, 1, 2, 3, 4, 5
                 ]
-
             }
         ])
             //input the answers
             .then(answer => {
-                
+
                 connection.query(
-                        "INSERT INTO employeeInfo SET ?",
-                        {
-                            first_name: answer.first,
-                            last_name: answer.last,
-                            title: answer.role,
-                            manager: answer.manager
-                        },
-                        function (err) {
-                            if (err) throw err;
-                            console.log("added successfully");
-                            // re-prompt
-                            initial();
-                        }
-                    )
-                
+                    "INSERT INTO employeeInfo SET ?",
+                    {
+                        first_name: answer.first,
+                        last_name: answer.last,
+                        title: answer.role,
+                        manager: answer.manager
+                    },
+                    function (err) {
+                        if (err) throw err;
+                        console.log("added successfully");
+                        // re-prompt
+                        initial();
+                    }
+                )
             })
-
-
     })
 };
 
@@ -209,7 +194,6 @@ async function removeEmployee() {
                 )
             })
     })
-
 }
 
 //user function wants to UPDATE Employee ROLE
@@ -221,7 +205,6 @@ async function updateRole() {
         //ask who they want to modify
         inquirer.prompt([
             {
-
                 type: "list",
                 name: "name",
                 message: "Which employee would you like to update the role of?",
@@ -233,6 +216,7 @@ async function updateRole() {
                     return choiceArray;
                 }
             },
+
             {
                 type: "list",
                 name: "role",
@@ -244,7 +228,6 @@ async function updateRole() {
                     }
                     return choiceArray;
                 }
-
             }
         ])
             // now modify them
@@ -275,7 +258,6 @@ async function updateRole() {
                                 }
                             )
                         })
-
                 }
                 else {
                     connection.query(
@@ -289,8 +271,6 @@ async function updateRole() {
                         }
                     )
                 }
-
-
             })
     })
 }
@@ -304,7 +284,6 @@ async function updateManager() {
         //ask who they want to modify
         inquirer.prompt([
             {
-
                 type: "list",
                 name: "name",
                 message: "Which employee would you like to update the manager of?",
@@ -316,6 +295,7 @@ async function updateManager() {
                     return choiceArray;
                 }
             },
+
             {
                 type: "list",
                 name: "manager",
@@ -327,7 +307,6 @@ async function updateManager() {
                     }
                     return choiceArray;
                 }
-
             }
         ])
             // now modify them
@@ -348,9 +327,6 @@ async function updateManager() {
                         initial();
                     }
                 )
-
-
-
             })
     })
 }
@@ -361,11 +337,9 @@ async function viewAllDepartment() {
         "SELECT * FROM departmentInfo", function (err, res) {
             if (err) throw err;
             console.table(res);
-
             initial();
         }
     )
-
 }
 
 //user function wants to view all roles, salaries, etc
@@ -374,7 +348,6 @@ async function viewAllRoles() {
         "SELECT * FROM roleInfo", function (err, res) {
             if (err) throw err;
             console.table(res);
-
             initial();
         }
     )
@@ -413,11 +386,13 @@ async function addRole() {
                 name: "roleTitle",
                 message: "What is the name of the new role?"
             },
+
             {
                 type: "input",
                 name: "salary",
                 message: "What is the starting salary of this position?"
             },
+
             {
                 type: "list",
                 name: "depID",
@@ -445,7 +420,6 @@ async function addRole() {
                         // console.log(" successfully");
                         // re-prompt
                         initial();
-
                     }
                 )
             })
