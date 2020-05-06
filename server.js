@@ -47,9 +47,11 @@ async function initial() {
         })
 }
 
-//user function wants to view all employees
+//user function wants to view all employees-SUPER BROKEN FIX THIS
 async function viewAll() {
-    connection.query("SELECT * FROM employeeInfo", function (err, res) {
+    connection.query(
+        "SELECT * FROM employeeInfo LEFT JOIN roleInfo ON employeeInfo.title=roleInfo.title",
+         function (err, res) {
         if (err) throw err;
         console.table(res)
         initial();
@@ -88,7 +90,7 @@ async function viewEmpByMan() {
     })
 }
 
-//user function wants to ADD EMPLOYEE -- SUPER BROKEN FIX IT
+//user function wants to ADD EMPLOYEE
 async function addEmployee() {
     //read the employees first
     connection.query("SELECT * FROM roleInfo", function (err, res) {
