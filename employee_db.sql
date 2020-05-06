@@ -20,6 +20,8 @@ CREATE TABLE departmentInfo(
     PRIMARY KEY (id)
 );
     
+
+
 CREATE TABLE roleInfo(
 	id INT NOT NULL AUTO_INCREMENT,
     title VARCHAR(30),
