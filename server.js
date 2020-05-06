@@ -491,6 +491,56 @@ async function addDepartment() {
     })
 }
 
+//user wants to add a Role
+async function addRole() {
+    connection.query("SELECT * FROM departmentInfo", function (err, res) {
+        if (err) throw err;
+
+    inquirer.prompt([
+        {
+            type: "input",
+            name: "roleTitle",
+            message: "What is the name of the new role?"
+        },
+        {
+            type: "input",
+            name: "salary",
+            message: "What is the starting salary of this position?"
+        },
+        {
+            type: "list",
+            name: "depID",
+            message: "What is the department ID?",
+            choices: function() {
+                let choiceArray = [];
+                for (let i = 0; i < res.length; i++) {
+                    choiceArray.push(res[i].id)
+                    
+                }
+                return choiceArray
+            }
+        }
+    ])
+    .then(answers => {
+        connection.query(
+            `INSERT INTO roleInfo SET ?`,
+            {
+                title: answers.roleTitle,
+                salary: answers.salary,
+                department_id: answers.depID
+            },
+            function (err) {
+                if (err) throw err;
+                // console.log(" successfully");
+                // re-prompt
+                initial();
+
+            }
+        )
+    })
+})
+}
+
 //run a switch statement to switch between them all
 async function select(answers) {
     switch (answers.action) {
@@ -550,11 +600,11 @@ async function select(answers) {
             addDepartment();
             break;
 
-        // //Add Role
-        // case("Add Role"):
-        //     console.log("adding role...");
-        //     addRole();
-        //     break;
+        //Add Role
+        case("Add Role"):
+            console.log("adding role...");
+            addRole();
+            break;
 
         default:
             //End connection
