@@ -34,6 +34,8 @@ async function initial() {
                 "Remove Employee",
                 "Update Employee Role",
                 "Update Employee Manager",
+                "View Department Table",
+                "View Role Table",
                 "Finished"
             ]
         }
@@ -43,7 +45,6 @@ async function initial() {
             select(answer)
         })
 }
-
 
 //user function wants to view all employees
 async function viewAll() {
@@ -57,7 +58,7 @@ async function viewAll() {
 }
 
 //user function wants to view all employees by department
-async function viewDepartment() {
+async function viewEmpByDep() {
     //pull table to view all departments
     connection.query("SELECT * FROM employeeInfo", function (err, res) {
         if (err) throw err;
@@ -90,7 +91,7 @@ async function viewDepartment() {
 }
 
 //user function wants to view all employees by manager
-async function viewManager() {
+async function viewEmpByMan() {
     connection.query("SELECT * FROM employeeInfo", function (err, res) {
         if (err) throw err
 
@@ -353,7 +354,7 @@ async function updateRole() {
                                     console.log("added successfully");
                                     // re-prompt
                                     initial();
-                                }         
+                                }
                             )
                         })
 
@@ -371,7 +372,7 @@ async function updateRole() {
                     )
                 }
 
-                
+
             })
     })
 }
@@ -430,13 +431,13 @@ async function updateManager() {
                         .then(function (result) {
                             connection.query(
                                 `UPDATE employeeInfo SET manager = "${result.newManager}" WHERE first_name = "${splitName[0]}" AND last_name = "${splitName[1]}"`,
-                                  
+
                                 function (err) {
                                     if (err) throw err;
                                     console.log("added successfully");
                                     // re-prompt
                                     initial();
-                                }         
+                                }
                             )
                         })
 
@@ -444,7 +445,7 @@ async function updateManager() {
                 else {
                     connection.query(
                         `UPDATE employeeInfo SET manager = "${answer.manager}" WHERE first_name = "${splitName[0]}" and last_name = "${splitName[1]}"`,
-                      
+
                         function (err) {
                             if (err) throw err;
                             console.log("added successfully");
@@ -454,11 +455,35 @@ async function updateManager() {
                     )
                 }
 
-                
+
             })
     })
 }
 
+//user function wants to view all departments
+async function viewAllDepartment() {
+    connection.query(
+        "SELECT * FROM departmentInfo", function(err, res) {
+            if (err) throw err;
+            console.table(res);
+
+            initial();
+        }
+    )
+
+}
+
+//user function wants to view all roles, salaries, etc
+async function viewAllRoles() {
+    connection.query(
+        "SELECT * FROM roleInfo", function(err, res) {
+            if (err) throw err;
+            console.table(res);
+
+            initial();
+        }
+    )
+}
 
 //run a switch statement to switch between them all
 async function select(answers) {
@@ -473,13 +498,13 @@ async function select(answers) {
         //view Department
         case ("View All Employees by Department"):
             console.log("View All Employees by Department");
-            viewDepartment();
+            viewEmpByDep();
             break;
 
         //view Manager
         case ("View All Employees by Manager"):
             console.log("View All Employees by Manager");
-            viewManager();
+            viewEmpByMan();
             break;
 
         //Add employee
@@ -505,9 +530,21 @@ async function select(answers) {
             console.log("Update Employee Manager");
             updateManager();
             break;
+        
+        //View Department
+        case("View Department Table"):
+            console.log("View Department");
+            viewAllDepartment();
+            break;
 
-              default:
-            //idk what you did but it broke the code
+        //View Role
+        case("View Role Table"):
+            console.log("View Role");
+            viewAllRoles();
+            break;
+
+        default:
+            //End connection
             console.log("Thank you for accessing the Database.");
             connection.end();
     }
