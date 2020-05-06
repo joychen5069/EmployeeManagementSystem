@@ -9,8 +9,7 @@ CREATE TABLE employeeInfo(
     first_name VARCHAR(50) NOT NULL,
     last_name VARCHAR (50) NOT NULL,
     title VARCHAR(50) NOT NULL,
-    department VARCHAR(50) NOT NULL,
-    manager VARCHAR(50) NOT NULL,
+    manager INT,
     PRIMARY KEY (id)
 );
 

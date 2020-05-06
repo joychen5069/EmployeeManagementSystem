@@ -28,15 +28,16 @@ async function initial() {
             message: "What would you like to do?",
             choices: [
                 "View All Employees",
-                "View All Employees by Department",
                 "View All Employees by Manager",
+                "View Department Table",
+                "View Role Table",
                 "Add Employee",
                 "Remove Employee",
                 "Update Employee Role",
                 "Update Employee Manager",
-                "View Department Table",
-                "View Role Table",
-                "Finished"
+                "Add Department",
+                "Add Role",
+                "Finish"
             ]
         }
     ])
@@ -161,6 +162,7 @@ async function addEmployee() {
                     "Lead Engineer",
                     "Software Engineer",
                     "Sales Team",
+                    "Sales Manager",
                     "Legal Team Lead",
                     "Lawyer",
                     "Accoutant"
@@ -169,29 +171,11 @@ async function addEmployee() {
             },
             {
                 type: "list",
-                name: "department",
-                message: "What is the Employee's department?",
-                choices: [
-                    "Add New Department",
-                    "Accounting",
-                    "Sales",
-                    "Legal",
-                    "Finance",
-                    "Engineering"
-                ]
-
-            },
-            {
-                type: "list",
                 name: "manager",
-                message: "Who is the employee's manager?",
-                choices: function () {
-                    var choiceArray = ["Add New Manager", "None"];
-                    for (var i = 0; i < res.length; i++) {
-                        choiceArray.push(res[i].manager);
-                    }
-                    return choiceArray;
-                }
+                message: "What is the manager's ID?",
+                choices: [
+                    0, 1, 2, 3, 4, 5
+                ]
 
             }
         ])
@@ -214,7 +198,6 @@ async function addEmployee() {
                                     first_name: answer.first,
                                     last_name: answer.last,
                                     title: results.newRole,
-                                    department: answer.department,
                                     manager: answer.manager
 
                                 },
@@ -228,34 +211,13 @@ async function addEmployee() {
                             )
                         })
                 }
-                else if (answer.department === "Add New Department") {
-                    inquirer.prompt([
-                        {
-                            type: "input",
-                            name: "newDep",
-                            message: "What is the Employee's department?",
-
-                        },
-                    ])
-                        .then(function (results) {
-                            connection.query(`UPDATE employeInfo SET department = "${results.newDep}" WHERE first_name = "${answer.first}" and last_name = "${answer.last}"`,
-                                function (err) {
-                                    if (err) throw err;
-                                    console.log("added successfully");
-                                    // re-prompt
-                                    initial();
-                                })
-                        })
-                }
                 else {
-
                     connection.query(
                         "INSERT INTO employeeInfo SET ?",
                         {
                             first_name: answer.first,
                             last_name: answer.last,
                             title: answer.role,
-                            department: answer.department,
                             manager: answer.manager
                         },
                         function (err) {
@@ -271,8 +233,6 @@ async function addEmployee() {
 
     })
 };
-
-
 
 //user function wants to REMOVE EMPLOYEE
 async function removeEmployee() {
@@ -509,6 +469,28 @@ async function viewAllRoles() {
     )
 }
 
+//user wants to add Department
+async function addDepartment() {
+    inquirer.prompt([
+        {
+            type: "input",
+            name: "depName",
+            message: "What is the name of the new department?"
+        }
+    ])
+    .then(answer => {
+        connection.query(
+            `INSERT INTO departmentInfo SET name = "${answer.depName}"`,
+            function (err) {
+                if (err) throw err;
+                console.log("added successfully");
+                // re-prompt
+                initial();
+            }
+        )
+    })
+}
+
 //run a switch statement to switch between them all
 async function select(answers) {
     switch (answers.action) {
@@ -519,16 +501,23 @@ async function select(answers) {
             viewAll();
             break;
 
-        //view Department
-        case ("View All Employees by Department"):
-            console.log("View All Employees by Department");
-            viewEmpByDep();
-            break;
-
         //view Manager
         case ("View All Employees by Manager"):
             console.log("View All Employees by Manager");
             viewEmpByMan();
+            break;
+
+            
+        //View Department
+        case ("View Department Table"):
+            console.log("View Department");
+            viewAllDepartment();
+            break;
+
+        //View Role
+        case ("View Role Table"):
+            console.log("View Role");
+            viewAllRoles();
             break;
 
         //Add employee
@@ -554,18 +543,18 @@ async function select(answers) {
             console.log("Update Employee Manager");
             updateManager();
             break;
-
-        //View Department
-        case ("View Department Table"):
-            console.log("View Department");
-            viewAllDepartment();
+        
+        //Add Department
+        case("Add Department"):
+            console.log("Adding department...")
+            addDepartment();
             break;
 
-        //View Role
-        case ("View Role Table"):
-            console.log("View Role");
-            viewAllRoles();
-            break;
+        // //Add Role
+        // case("Add Role"):
+        //     console.log("adding role...");
+        //     addRole();
+        //     break;
 
         default:
             //End connection
