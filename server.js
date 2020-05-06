@@ -58,39 +58,6 @@ async function viewAll() {
     })
 }
 
-//user function wants to view all employees by department
-async function viewEmpByDep() {
-    //pull table to view all departments
-    connection.query("SELECT * FROM employeeInfo", function (err, res) {
-        if (err) throw err;
-        //ask what department they want to view
-        inquirer.prompt([
-            {
-                type: "list",
-                name: "department",
-                message: "What department would you like to view?",
-                choices: function () {
-                    var choiceArray = [];
-                    for (var i = 0; i < res.length; i++) {
-                        choiceArray.push(res[i].department);
-                    }
-                    return choiceArray;
-                },
-
-            }
-        ])
-            .then(function (answer) {
-                connection.query(`SELECT * FROM employeeInfo WHERE department = "${answer.department}"`, function (err, res) {
-                    if (err) throw err;
-
-                    console.table(res)
-
-                    initial();
-                })
-            })
-    })
-}
-
 //user function wants to view all employees by manager
 async function viewEmpByMan() {
     connection.query("SELECT * FROM employeeInfo", function (err, res) {
@@ -127,7 +94,7 @@ async function viewEmpByMan() {
 //user function wants to ADD EMPLOYEE -- SUPER BROKEN FIX IT
 async function addEmployee() {
     //read the employees first
-    connection.query("SELECT * FROM employeeInfo", function (err, res) {
+    connection.query("SELECT * FROM roleInfo", function (err, res) {
         if (err) throw err;
 
         //ask the key questions
@@ -157,17 +124,14 @@ async function addEmployee() {
                 type: "list",
                 name: "role",
                 message: "What is the Employee's role?",
-                choices: [
-                    "Add New Role",
-                    "Lead Engineer",
-                    "Software Engineer",
-                    "Sales Team",
-                    "Sales Manager",
-                    "Legal Team Lead",
-                    "Lawyer",
-                    "Accoutant"
-                ]
-
+                choices: function() {
+                    choiceArray = [];
+                    for (let i = 0; i < res.length; i++) {
+                        choiceArray.push(res[i].title)
+                        
+                    }
+                    return choiceArray
+                }
             },
             {
                 type: "list",
@@ -181,38 +145,8 @@ async function addEmployee() {
         ])
             //input the answers
             .then(answer => {
-                //if user wants to add a new role, ask question
-                if (answer.role === "Add New Role") {
-                    inquirer.prompt([
-                        {
-                            type: "input",
-                            name: "newRole",
-                            message: "What is the role?"
-                        }
-                    ])
-                        .then(function (results) {
-
-                            connection.query(
-                                "INSERT INTO employeeInfo SET ?",
-                                {
-                                    first_name: answer.first,
-                                    last_name: answer.last,
-                                    title: results.newRole,
-                                    manager: answer.manager
-
-                                },
-                                function (err) {
-                                    if (err) throw err;
-                                    // console.log(" successfully");
-                                    // re-prompt
-                                    initial();
-
-                                }
-                            )
-                        })
-                }
-                else {
-                    connection.query(
+                
+                connection.query(
                         "INSERT INTO employeeInfo SET ?",
                         {
                             first_name: answer.first,
@@ -227,7 +161,7 @@ async function addEmployee() {
                             initial();
                         }
                     )
-                }
+                
             })
 
 
@@ -387,7 +321,7 @@ async function updateManager() {
                 name: "manager",
                 message: "Who would you like to update the manager to be?",
                 choices: function () {
-                    var choiceArray = ["Add Manager"];
+                    var choiceArray = [];
                     for (var i = 0; i < res.length; i++) {
                         choiceArray.push(res[i].manager);
                     }
@@ -404,40 +338,17 @@ async function updateManager() {
                 let splitName = fullName.split(" ");
                 console.log(splitName[0]);
 
-                if (answer.manager === "Add Manager") {
-                    inquirer.prompt([
-                        {
-                            type: "input",
-                            name: "newManager",
-                            message: "Who is the new manager?"
-                        }
-                    ])
-                        .then(function (result) {
-                            connection.query(
-                                `UPDATE employeeInfo SET manager = "${result.newManager}" WHERE first_name = "${splitName[0]}" AND last_name = "${splitName[1]}"`,
+                connection.query(
+                    `UPDATE employeeInfo SET manager = "${answer.manager}" WHERE first_name = "${splitName[0]}" and last_name = "${splitName[1]}"`,
 
-                                function (err) {
-                                    if (err) throw err;
-                                    console.log("added successfully");
-                                    // re-prompt
-                                    initial();
-                                }
-                            )
-                        })
+                    function (err) {
+                        if (err) throw err;
+                        console.log("updated successfully");
+                        // re-prompt
+                        initial();
+                    }
+                )
 
-                }
-                else {
-                    connection.query(
-                        `UPDATE employeeInfo SET manager = "${answer.manager}" WHERE first_name = "${splitName[0]}" and last_name = "${splitName[1]}"`,
-
-                        function (err) {
-                            if (err) throw err;
-                            console.log("added successfully");
-                            // re-prompt
-                            iniial();
-                        }
-                    )
-                }
 
 
             })
@@ -478,17 +389,17 @@ async function addDepartment() {
             message: "What is the name of the new department?"
         }
     ])
-    .then(answer => {
-        connection.query(
-            `INSERT INTO departmentInfo SET name = "${answer.depName}"`,
-            function (err) {
-                if (err) throw err;
-                console.log("added successfully");
-                // re-prompt
-                initial();
-            }
-        )
-    })
+        .then(answer => {
+            connection.query(
+                `INSERT INTO departmentInfo SET name = "${answer.depName}"`,
+                function (err) {
+                    if (err) throw err;
+                    console.log("added successfully");
+                    // re-prompt
+                    initial();
+                }
+            )
+        })
 }
 
 //user wants to add a Role
@@ -496,49 +407,49 @@ async function addRole() {
     connection.query("SELECT * FROM departmentInfo", function (err, res) {
         if (err) throw err;
 
-    inquirer.prompt([
-        {
-            type: "input",
-            name: "roleTitle",
-            message: "What is the name of the new role?"
-        },
-        {
-            type: "input",
-            name: "salary",
-            message: "What is the starting salary of this position?"
-        },
-        {
-            type: "list",
-            name: "depID",
-            message: "What is the department ID?",
-            choices: function() {
-                let choiceArray = [];
-                for (let i = 0; i < res.length; i++) {
-                    choiceArray.push(res[i].id)
-                    
-                }
-                return choiceArray
-            }
-        }
-    ])
-    .then(answers => {
-        connection.query(
-            `INSERT INTO roleInfo SET ?`,
+        inquirer.prompt([
             {
-                title: answers.roleTitle,
-                salary: answers.salary,
-                department_id: answers.depID
+                type: "input",
+                name: "roleTitle",
+                message: "What is the name of the new role?"
             },
-            function (err) {
-                if (err) throw err;
-                // console.log(" successfully");
-                // re-prompt
-                initial();
+            {
+                type: "input",
+                name: "salary",
+                message: "What is the starting salary of this position?"
+            },
+            {
+                type: "list",
+                name: "depID",
+                message: "What is the department ID?",
+                choices: function () {
+                    let choiceArray = [];
+                    for (let i = 0; i < res.length; i++) {
+                        choiceArray.push(res[i].id)
 
+                    }
+                    return choiceArray
+                }
             }
-        )
+        ])
+            .then(answers => {
+                connection.query(
+                    `INSERT INTO roleInfo SET ?`,
+                    {
+                        title: answers.roleTitle,
+                        salary: answers.salary,
+                        department_id: answers.depID
+                    },
+                    function (err) {
+                        if (err) throw err;
+                        // console.log(" successfully");
+                        // re-prompt
+                        initial();
+
+                    }
+                )
+            })
     })
-})
 }
 
 //run a switch statement to switch between them all
@@ -557,7 +468,7 @@ async function select(answers) {
             viewEmpByMan();
             break;
 
-            
+
         //View Department
         case ("View Department Table"):
             console.log("View Department");
@@ -593,15 +504,15 @@ async function select(answers) {
             console.log("Update Employee Manager");
             updateManager();
             break;
-        
+
         //Add Department
-        case("Add Department"):
+        case ("Add Department"):
             console.log("Adding department...")
             addDepartment();
             break;
 
         //Add Role
-        case("Add Role"):
+        case ("Add Role"):
             console.log("adding role...");
             addRole();
             break;
