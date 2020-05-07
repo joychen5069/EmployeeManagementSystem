@@ -23,6 +23,7 @@ CREATE TABLE roleInfo(
 	id INT NOT NULL AUTO_INCREMENT,
     title VARCHAR(30),
     salary DECIMAL,
+    manager VARCHAR(30) NOT NULL,
     department_id INT NOT NULL,
     PRIMARY KEY (id)
     );

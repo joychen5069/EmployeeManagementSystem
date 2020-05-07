@@ -14,7 +14,7 @@ const connection = mysql.createConnection({
 });
 
 //connect to mysql server and sql database 
-connection.connect(function (err) {
+connection.connect((err) => {
     if (err) throw err;
     initial();
 })
@@ -49,16 +49,17 @@ initial = async () => {
 viewAll = async () => {
     connection.query(
         "SELECT * FROM employeeInfo LEFT JOIN roleInfo ON employeeInfo.title=roleInfo.title LEFT JOIN departmentInfo ON roleInfo.department_id=departmentInfo.id",
-         function (err, res) {
-        if (err) throw err;
-        console.table(res)
-        initial();
-    })
+        (err, res) => {
+            if (err) throw err;
+            console.table(res)
+            initial();
+        })
 }
 
 //user function wants to view all employees by manager
- viewEmpByMan = async () => {
-    connection.query("SELECT * FROM employeeInfo", function (err, res) {
+viewEmpByMan = async () => {
+    connection.query("SELECT * FROM roleInfo", 
+    (err, res) => {
         if (err) throw err
 
         //ask what manager they want to view
@@ -77,13 +78,14 @@ viewAll = async () => {
             }
         ])
             .then((answer) => {
-                connection.query(`SELECT * FROM employeeInfo WHERE manager = "${answer.manager}"`, function (err, res) {
-                    if (err) throw err;
+                connection.query(`SELECT * FROM employeeInfo WHERE manager = "${answer.manager}"`,
+                    (err, res) => {
+                        if (err) throw err;
 
-                    console.table(res)
+                        console.table(res)
 
-                    initial();
-                })
+                        initial();
+                    })
             })
     })
 }
@@ -91,7 +93,7 @@ viewAll = async () => {
 //user function wants to ADD EMPLOYEE
 addEmployee = () => {
     //read the employees first
-    connection.query("SELECT * FROM roleInfo", async function (err, res) {
+    connection.query("SELECT * FROM roleInfo", async (err, res) => {
         if (err) throw err;
 
         //ask the key questions
@@ -145,7 +147,7 @@ addEmployee = () => {
 //user function wants to REMOVE EMPLOYEE
 removeEmployee = () => {
     //read the employees first
-    connection.query("SELECT * FROM employeeInfo",  (err, res) => {
+    connection.query("SELECT * FROM employeeInfo", (err, res) => {
         if (err) throw err;
 
         //ask which employee they want to remove
@@ -288,14 +290,10 @@ updateManager = () => {
             {
                 type: "list",
                 name: "manager",
-                message: "Who would you like to update the manager to be?",
-                choices: () => {
-                    let choiceArray = [];
-                    for (let i = 0; i < res.length; i++) {
-                        choiceArray.push(res[i].manager);
-                    }
-                    return choiceArray;
-                }
+                message: "What is the ID of the new manager?",
+                choices: [
+                    0, 1, 2, 3, 4, 5
+                ]
             }
         ])
             // now modify them
@@ -321,7 +319,7 @@ updateManager = () => {
 }
 
 //user function wants to view all departments
-viewAllDepartment = () =>{
+viewAllDepartment = () => {
     connection.query(
         "SELECT * FROM departmentInfo", (err, res) => {
             if (err) throw err;
@@ -332,7 +330,7 @@ viewAllDepartment = () =>{
 }
 
 //user function wants to view all roles, salaries, etc
-viewAllRoles = () =>{
+viewAllRoles = () => {
     connection.query(
         "SELECT * FROM roleInfo", (err, res) => {
             if (err) throw err;
@@ -414,6 +412,7 @@ addRole = () => {
             })
     })
 }
+
 
 //run a switch statement to switch between them all
 select = (answers) => {
