@@ -20,8 +20,8 @@ connection.connect(function (err) {
 })
 
 //prompt question about what the user wants to do
-async function initial() {
-    return inquirer.prompt([
+initial = async () => {
+    const answer = await inquirer.prompt([
         {
             type: "list",
             name: "action",
@@ -40,15 +40,13 @@ async function initial() {
                 "Finish"
             ]
         }
-    ])
-        .then(function (answer) {
-            console.log(answer.action)
-            select(answer)
-        })
+    ]);
+    console.log(answer.action);
+    select(answer);
 }
 
 //user function wants to view all employees-SUPER BROKEN FIX THIS
-async function viewAll() {
+viewAll = async () => {
     connection.query(
         "SELECT * FROM employeeInfo LEFT JOIN roleInfo ON employeeInfo.title=roleInfo.title LEFT JOIN departmentInfo ON roleInfo.department_id=departmentInfo.id",
          function (err, res) {
@@ -59,7 +57,7 @@ async function viewAll() {
 }
 
 //user function wants to view all employees by manager
-async function viewEmpByMan() {
+ viewEmpByMan = async () => {
     connection.query("SELECT * FROM employeeInfo", function (err, res) {
         if (err) throw err
 
@@ -91,25 +89,23 @@ async function viewEmpByMan() {
 }
 
 //user function wants to ADD EMPLOYEE
-async function addEmployee() {
+addEmployee = () => {
     //read the employees first
-    connection.query("SELECT * FROM roleInfo", function (err, res) {
+    connection.query("SELECT * FROM roleInfo", async function (err, res) {
         if (err) throw err;
 
         //ask the key questions
-        return inquirer.prompt([
+        const answer = await inquirer.prompt([
             {
                 type: "input",
                 name: "first",
                 message: "What is the Employee's first name?"
             },
-
             {
                 type: "input",
                 name: "last",
                 message: "What is the Employee's last name?"
             },
-
             {
                 type: "list",
                 name: "role",
@@ -117,13 +113,11 @@ async function addEmployee() {
                 choices: function () {
                     choiceArray = [];
                     for (let i = 0; i < res.length; i++) {
-                        choiceArray.push(res[i].title)
-
+                        choiceArray.push(res[i].title);
                     }
-                    return choiceArray
+                    return choiceArray;
                 }
             },
-
             {
                 type: "list",
                 name: "manager",
@@ -132,31 +126,24 @@ async function addEmployee() {
                     0, 1, 2, 3, 4, 5
                 ]
             }
-        ])
-            //input the answers
-            .then(answer => {
-
-                connection.query(
-                    "INSERT INTO employeeInfo SET ?",
-                    {
-                        first_name: answer.first,
-                        last_name: answer.last,
-                        title: answer.role,
-                        manager: answer.manager
-                    },
-                    function (err) {
-                        if (err) throw err;
-                        console.log("added successfully");
-                        // re-prompt
-                        initial();
-                    }
-                )
-            })
+        ]);
+        connection.query("INSERT INTO employeeInfo SET ?", {
+            first_name: answer.first,
+            last_name: answer.last,
+            title: answer.role,
+            manager: answer.manager
+        }, function (err) {
+            if (err)
+                throw err;
+            console.log("added successfully");
+            // re-prompt
+            initial();
+        });
     })
 };
 
 //user function wants to REMOVE EMPLOYEE
-async function removeEmployee() {
+removeEmployee = () => {
     //read the employees first
     connection.query("SELECT * FROM employeeInfo", function (err, res) {
         if (err) throw err;
@@ -199,7 +186,7 @@ async function removeEmployee() {
 }
 
 //user function wants to UPDATE Employee ROLE
-async function updateRole() {
+updateRole = () => {
     //pull all the employees first
     connection.query("SELECT * FROM employeeInfo", function (err, res) {
         if (err) throw err
@@ -278,7 +265,7 @@ async function updateRole() {
 }
 
 //user function wants to UPDATE Employee MANAGER
-async function updateManager() {
+updateManager = () => {
     //pull all the employees first
     connection.query("SELECT * FROM employeeInfo", function (err, res) {
         if (err) throw err
@@ -334,7 +321,7 @@ async function updateManager() {
 }
 
 //user function wants to view all departments
-async function viewAllDepartment() {
+viewAllDepartment = () =>{
     connection.query(
         "SELECT * FROM departmentInfo", function (err, res) {
             if (err) throw err;
@@ -345,7 +332,7 @@ async function viewAllDepartment() {
 }
 
 //user function wants to view all roles, salaries, etc
-async function viewAllRoles() {
+viewAllRoles = () =>{
     connection.query(
         "SELECT * FROM roleInfo", function (err, res) {
             if (err) throw err;
@@ -356,7 +343,7 @@ async function viewAllRoles() {
 }
 
 //user wants to add Department
-async function addDepartment() {
+addDepartment = () =>{
     inquirer.prompt([
         {
             type: "input",
@@ -366,7 +353,7 @@ async function addDepartment() {
     ])
         .then(answer => {
             connection.query(
-                `INSERT INTO departmentInfo SET name = "${answer.depName}"`,
+                `INSERT INTO departmentInfo SET department = "${answer.depName}"`,
                 function (err) {
                     if (err) throw err;
                     console.log("added successfully");
@@ -378,7 +365,7 @@ async function addDepartment() {
 }
 
 //user wants to add a Role
-async function addRole() {
+addRole = () => {
     connection.query("SELECT * FROM departmentInfo", function (err, res) {
         if (err) throw err;
 
@@ -429,7 +416,7 @@ async function addRole() {
 }
 
 //run a switch statement to switch between them all
-async function select(answers) {
+function select(answers) {
     switch (answers.action) {
 
         //view ALL

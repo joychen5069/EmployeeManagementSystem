@@ -15,7 +15,7 @@ CREATE TABLE employeeInfo(
 
 CREATE TABLE departmentInfo(
 	id INT NOT NULL auto_increment,
-    name VARCHAR(30),
+    department VARCHAR(30),
     PRIMARY KEY (id)
 );
     

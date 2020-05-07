@@ -1,9 +1,9 @@
 USE employee_db;
 
 INSERT INTO employeeInfo (first_name, last_name, title, manager)
-VALUES ("Joe", "Exotic","Software Dev", 1);
+VALUES ("Joe", "Exotic","Software Engineer", 1);
 
-INSERT INTO departmentInfo(name)
+INSERT INTO departmentInfo(department)
 VALUES("Finance"),("Engineering"),("Sales"),("Legal");
 
 INSERT INTO roleInfo(title, salary, department_id)
