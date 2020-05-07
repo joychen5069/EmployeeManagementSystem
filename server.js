@@ -28,14 +28,14 @@ initial = async () => {
             message: "What would you like to do?",
             choices: [
                 "View All Employees",
-                "View All Employees by Manager",
+                // "View All Employees by Manager",
                 "View Department Table",
                 "View Role Table",
                 "Add Employee",
                 "Add Department",
                 "Add Role",
                 "Update Employee Role",
-                "Update Employee Manager",
+                // "Update Employee Manager",
                 "Remove Employee",
                 "Finish"
             ]
@@ -45,7 +45,7 @@ initial = async () => {
     select(answer);
 }
 
-//user function wants to view all employees-SUPER BROKEN FIX THIS
+//user function wants to view all employees
 viewAll = async () => {
     connection.query(
         "SELECT * FROM employeeInfo LEFT JOIN roleInfo ON employeeInfo.title=roleInfo.title LEFT JOIN departmentInfo ON roleInfo.department_id=departmentInfo.id",
@@ -56,39 +56,39 @@ viewAll = async () => {
         })
 }
 
-//user function wants to view all employees by manager
-viewEmpByMan = async () => {
-    connection.query("SELECT * FROM roleInfo", 
-    (err, res) => {
-        if (err) throw err
+//user function wants to view all employees by manager--THIS FUNCTION DOES NOT WORK YET
+// viewEmpByMan = async () => {
+//     connection.query("SELECT * FROM roleInfo", 
+//     (err, res) => {
+//         if (err) throw err
 
-        //ask what manager they want to view
-        inquirer.prompt([
-            {
-                type: "list",
-                name: "manager",
-                message: "Pick a manager to view the employees:",
-                choices: () => {
-                    let choiceArray = [];
-                    for (let i = 0; i < res.length; i++) {
-                        choiceArray.push(res[i].manager);
-                    }
-                    return choiceArray;
-                }
-            }
-        ])
-            .then((answer) => {
-                connection.query(`SELECT * FROM employeeInfo WHERE manager = "${answer.manager}"`,
-                    (err, res) => {
-                        if (err) throw err;
+//         //ask what manager they want to view
+//         inquirer.prompt([
+//             {
+//                 type: "list",
+//                 name: "manager",
+//                 message: "Pick a manager to view the employees:",
+//                 choices: () => {
+//                     let choiceArray = [];
+//                     for (let i = 0; i < res.length; i++) {
+//                         choiceArray.push(res[i].manager);
+//                     }
+//                     return choiceArray;
+//                 }
+//             }
+//         ])
+//             .then((answer) => {
+//                 connection.query(`SELECT * FROM employeeInfo WHERE manager = "${answer.manager}"`,
+//                     (err, res) => {
+//                         if (err) throw err;
 
-                        console.table(res)
+//                         console.table(res)
 
-                        initial();
-                    })
-            })
-    })
-}
+//                         initial();
+//                     })
+//             })
+//     })
+// }
 
 //user function wants to ADD EMPLOYEE
 addEmployee = () => {
@@ -266,57 +266,57 @@ updateRole = () => {
     })
 }
 
-//user function wants to UPDATE Employee MANAGER
-updateManager = () => {
-    //pull all the employees first
-    connection.query("SELECT * FROM employeeInfo", (err, res) => {
-        if (err) throw err
+//user function wants to UPDATE Employee MANAGER--THIS FUNCTION DOES NOT WORK YET
+// updateManager = () => {
+//     //pull all the employees first
+//     connection.query("SELECT * FROM employeeInfo", (err, res) => {
+//         if (err) throw err
 
-        //ask who they want to modify
-        inquirer.prompt([
-            {
-                type: "list",
-                name: "name",
-                message: "Which employee would you like to update the manager of?",
-                choices: () => {
-                    let choiceArray = [];
-                    for (let i = 0; i < res.length; i++) {
-                        choiceArray.push(res[i].first_name + " " + res[i].last_name);
-                    }
-                    return choiceArray;
-                }
-            },
+//         //ask who they want to modify
+//         inquirer.prompt([
+//             {
+//                 type: "list",
+//                 name: "name",
+//                 message: "Which employee would you like to update the manager of?",
+//                 choices: () => {
+//                     let choiceArray = [];
+//                     for (let i = 0; i < res.length; i++) {
+//                         choiceArray.push(res[i].first_name + " " + res[i].last_name);
+//                     }
+//                     return choiceArray;
+//                 }
+//             },
 
-            {
-                type: "list",
-                name: "manager",
-                message: "What is the ID of the new manager?",
-                choices: [
-                    0, 1, 2, 3, 4, 5
-                ]
-            }
-        ])
-            // now modify them
-            .then((answer) => {
-                //split the name
-                let fullName = answer.name;
-                console.log(fullName);
-                let splitName = fullName.split(" ");
-                console.log(splitName[0]);
+//             {
+//                 type: "list",
+//                 name: "manager",
+//                 message: "What is the ID of the new manager?",
+//                 choices: [
+//                     0, 1, 2, 3, 4, 5
+//                 ]
+//             }
+//         ])
+//             // now modify them
+//             .then((answer) => {
+//                 //split the name
+//                 let fullName = answer.name;
+//                 console.log(fullName);
+//                 let splitName = fullName.split(" ");
+//                 console.log(splitName[0]);
 
-                connection.query(
-                    `UPDATE employeeInfo SET manager = "${answer.manager}" WHERE first_name = "${splitName[0]}" and last_name = "${splitName[1]}"`,
+//                 connection.query(
+//                     `UPDATE employeeInfo SET manager = "${answer.manager}" WHERE first_name = "${splitName[0]}" and last_name = "${splitName[1]}"`,
 
-                    (err) => {
-                        if (err) throw err;
-                        console.log("updated successfully");
-                        // re-prompt
-                        initial();
-                    }
-                )
-            })
-    })
-}
+//                     (err) => {
+//                         if (err) throw err;
+//                         console.log("updated successfully");
+//                         // re-prompt
+//                         initial();
+//                     }
+//                 )
+//             })
+//     })
+// }
 
 //user function wants to view all departments
 viewAllDepartment = () => {
@@ -432,10 +432,10 @@ select = (answers) => {
             break;
 
         //view Manager
-        case ("View All Employees by Manager"):
-            console.log("View All Employees by Manager");
-            viewEmpByMan();
-            break;
+        // case ("View All Employees by Manager"):
+        //     console.log("View All Employees by Manager");
+        //     viewEmpByMan();
+        //     break;
 
 
         //View Department
@@ -469,10 +469,10 @@ select = (answers) => {
             break;
 
         //Update Manager
-        case ("Update Employee Manager"):
-            console.log("Update Employee Manager");
-            updateManager();
-            break;
+        // case ("Update Employee Manager"):
+        //     console.log("Update Employee Manager");
+        //     updateManager();
+        //     break;
 
         //Add Department
         case ("Add Department"):
