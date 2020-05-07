@@ -381,6 +381,12 @@ addRole = () => {
             },
 
             {
+                type: "input",
+                name: "manager",
+                message: "Who is the manager of this role? (if none, write None)"
+            },
+
+            {
                 type: "list",
                 name: "depID",
                 message: "What is the department ID?",
@@ -400,6 +406,7 @@ addRole = () => {
                     {
                         title: answers.roleTitle,
                         salary: answers.salary,
+                        manager: answers.manager,
                         department_id: answers.depID
                     },
                     (err) => {
