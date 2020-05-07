@@ -61,22 +61,22 @@ viewAll = async () => {
     connection.query("SELECT * FROM employeeInfo", function (err, res) {
         if (err) throw err
 
-        //ask what department they want to view
+        //ask what manager they want to view
         inquirer.prompt([
             {
                 type: "list",
                 name: "manager",
                 message: "Pick a manager to view the employees:",
-                choices: function () {
-                    var choiceArray = [];
-                    for (var i = 0; i < res.length; i++) {
+                choices: () => {
+                    let choiceArray = [];
+                    for (let i = 0; i < res.length; i++) {
                         choiceArray.push(res[i].manager);
                     }
                     return choiceArray;
                 }
             }
         ])
-            .then(function (answer) {
+            .then((answer) => {
                 connection.query(`SELECT * FROM employeeInfo WHERE manager = "${answer.manager}"`, function (err, res) {
                     if (err) throw err;
 
@@ -110,8 +110,8 @@ addEmployee = () => {
                 type: "list",
                 name: "role",
                 message: "What is the Employee's role?",
-                choices: function () {
-                    choiceArray = [];
+                choices: () => {
+                    let choiceArray = [];
                     for (let i = 0; i < res.length; i++) {
                         choiceArray.push(res[i].title);
                     }
@@ -132,7 +132,7 @@ addEmployee = () => {
             last_name: answer.last,
             title: answer.role,
             manager: answer.manager
-        }, function (err) {
+        }, (err) => {
             if (err)
                 throw err;
             console.log("added successfully");
@@ -145,7 +145,7 @@ addEmployee = () => {
 //user function wants to REMOVE EMPLOYEE
 removeEmployee = () => {
     //read the employees first
-    connection.query("SELECT * FROM employeeInfo", function (err, res) {
+    connection.query("SELECT * FROM employeeInfo",  (err, res) => {
         if (err) throw err;
 
         //ask which employee they want to remove
@@ -154,9 +154,9 @@ removeEmployee = () => {
                 type: "list",
                 name: "name",
                 message: "Who would you like to remove?",
-                choices: function () {
-                    var choiceArray = [];
-                    for (var i = 0; i < res.length; i++) {
+                choices: () => {
+                    let choiceArray = [];
+                    for (let i = 0; i < res.length; i++) {
                         choiceArray.push(res[i].first_name + " " + res[i].last_name);
                     }
                     return choiceArray;
@@ -164,7 +164,7 @@ removeEmployee = () => {
             }
         ])
             //now actually delete them
-            .then(function (answer) {
+            .then((answer) => {
 
                 let fullName = answer.name
                 console.log(fullName)
@@ -174,7 +174,7 @@ removeEmployee = () => {
                 connection.query(
                     `DELETE FROM employeeInfo WHERE first_name = "${remove[0]}" AND last_name = "${remove[1]}"`,
 
-                    function (err) {
+                    (err) => {
                         if (err) throw err;
                         console.log("removed successfully");
                         // re-prompt
@@ -188,7 +188,7 @@ removeEmployee = () => {
 //user function wants to UPDATE Employee ROLE
 updateRole = () => {
     //pull all the employees first
-    connection.query("SELECT * FROM employeeInfo", function (err, res) {
+    connection.query("SELECT * FROM employeeInfo", (err, res) => {
         if (err) throw err
 
         //ask who they want to modify
@@ -197,9 +197,9 @@ updateRole = () => {
                 type: "list",
                 name: "name",
                 message: "Which employee would you like to update the role of?",
-                choices: function () {
-                    var choiceArray = [];
-                    for (var i = 0; i < res.length; i++) {
+                choices: () => {
+                    let choiceArray = [];
+                    for (let i = 0; i < res.length; i++) {
                         choiceArray.push(res[i].first_name + " " + res[i].last_name);
                     }
                     return choiceArray;
@@ -210,9 +210,9 @@ updateRole = () => {
                 type: "list",
                 name: "role",
                 message: "What would you like to update the role to be?",
-                choices: function () {
-                    var choiceArray = ["Add Role"];
-                    for (var i = 0; i < res.length; i++) {
+                choices: () => {
+                    let choiceArray = ["Add Role"];
+                    for (let i = 0; i < res.length; i++) {
                         choiceArray.push(res[i].title);
                     }
                     return choiceArray;
@@ -220,7 +220,7 @@ updateRole = () => {
             }
         ])
             // now modify them
-            .then(function (answer) {
+            .then((answer) => {
                 //split the name
                 let fullName = answer.name;
                 console.log(fullName);
@@ -235,11 +235,11 @@ updateRole = () => {
                             message: "What is the new role?"
                         }
                     ])
-                        .then(function (result) {
+                        .then((result) => {
                             connection.query(
                                 `UPDATE employeeInfo SET title = "${result.newRole}" WHERE first_name = "${splitName[0]}" AND last_name = "${splitName[1]}"`,
                                 // [ {title: result.newRole}  ]   
-                                function (err) {
+                                (err) => {
                                     if (err) throw err;
                                     console.log("added successfully");
                                     // re-prompt
@@ -252,7 +252,7 @@ updateRole = () => {
                     connection.query(
                         `UPDATE employeeInfo SET title = "${answer.role}" WHERE first_name = "${splitName[0]}" and last_name = "${splitName[1]}"`,
                         // [ {title: answer.role}     ]
-                        function (err) {
+                        (err) => {
                             if (err) throw err;
                             console.log("added successfully");
                             // re-prompt
@@ -267,7 +267,7 @@ updateRole = () => {
 //user function wants to UPDATE Employee MANAGER
 updateManager = () => {
     //pull all the employees first
-    connection.query("SELECT * FROM employeeInfo", function (err, res) {
+    connection.query("SELECT * FROM employeeInfo", (err, res) => {
         if (err) throw err
 
         //ask who they want to modify
@@ -276,9 +276,9 @@ updateManager = () => {
                 type: "list",
                 name: "name",
                 message: "Which employee would you like to update the manager of?",
-                choices: function () {
-                    var choiceArray = [];
-                    for (var i = 0; i < res.length; i++) {
+                choices: () => {
+                    let choiceArray = [];
+                    for (let i = 0; i < res.length; i++) {
                         choiceArray.push(res[i].first_name + " " + res[i].last_name);
                     }
                     return choiceArray;
@@ -289,9 +289,9 @@ updateManager = () => {
                 type: "list",
                 name: "manager",
                 message: "Who would you like to update the manager to be?",
-                choices: function () {
-                    var choiceArray = [];
-                    for (var i = 0; i < res.length; i++) {
+                choices: () => {
+                    let choiceArray = [];
+                    for (let i = 0; i < res.length; i++) {
                         choiceArray.push(res[i].manager);
                     }
                     return choiceArray;
@@ -299,7 +299,7 @@ updateManager = () => {
             }
         ])
             // now modify them
-            .then(function (answer) {
+            .then((answer) => {
                 //split the name
                 let fullName = answer.name;
                 console.log(fullName);
@@ -309,7 +309,7 @@ updateManager = () => {
                 connection.query(
                     `UPDATE employeeInfo SET manager = "${answer.manager}" WHERE first_name = "${splitName[0]}" and last_name = "${splitName[1]}"`,
 
-                    function (err) {
+                    (err) => {
                         if (err) throw err;
                         console.log("updated successfully");
                         // re-prompt
@@ -323,7 +323,7 @@ updateManager = () => {
 //user function wants to view all departments
 viewAllDepartment = () =>{
     connection.query(
-        "SELECT * FROM departmentInfo", function (err, res) {
+        "SELECT * FROM departmentInfo", (err, res) => {
             if (err) throw err;
             console.table(res);
             initial();
@@ -334,7 +334,7 @@ viewAllDepartment = () =>{
 //user function wants to view all roles, salaries, etc
 viewAllRoles = () =>{
     connection.query(
-        "SELECT * FROM roleInfo", function (err, res) {
+        "SELECT * FROM roleInfo", (err, res) => {
             if (err) throw err;
             console.table(res);
             initial();
@@ -343,7 +343,7 @@ viewAllRoles = () =>{
 }
 
 //user wants to add Department
-addDepartment = () =>{
+addDepartment = () => {
     inquirer.prompt([
         {
             type: "input",
@@ -354,7 +354,7 @@ addDepartment = () =>{
         .then(answer => {
             connection.query(
                 `INSERT INTO departmentInfo SET department = "${answer.depName}"`,
-                function (err) {
+                (err) => {
                     if (err) throw err;
                     console.log("added successfully");
                     // re-prompt
@@ -366,7 +366,7 @@ addDepartment = () =>{
 
 //user wants to add a Role
 addRole = () => {
-    connection.query("SELECT * FROM departmentInfo", function (err, res) {
+    connection.query("SELECT * FROM departmentInfo", (err, res) => {
         if (err) throw err;
 
         inquirer.prompt([
@@ -386,7 +386,7 @@ addRole = () => {
                 type: "list",
                 name: "depID",
                 message: "What is the department ID?",
-                choices: function () {
+                choices: () => {
                     let choiceArray = [];
                     for (let i = 0; i < res.length; i++) {
                         choiceArray.push(res[i].id)
@@ -404,7 +404,7 @@ addRole = () => {
                         salary: answers.salary,
                         department_id: answers.depID
                     },
-                    function (err) {
+                    (err) => {
                         if (err) throw err;
                         // console.log(" successfully");
                         // re-prompt
@@ -416,7 +416,7 @@ addRole = () => {
 }
 
 //run a switch statement to switch between them all
-function select(answers) {
+select = (answers) => {
     switch (answers.action) {
 
         //view ALL
