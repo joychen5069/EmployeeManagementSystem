@@ -50,7 +50,7 @@ async function initial() {
 //user function wants to view all employees-SUPER BROKEN FIX THIS
 async function viewAll() {
     connection.query(
-        "SELECT * FROM employeeInfo LEFT JOIN roleInfo ON employeeInfo.title=roleInfo.title",
+        "SELECT * FROM employeeInfo LEFT JOIN roleInfo ON employeeInfo.title=roleInfo.title LEFT JOIN departmentInfo ON roleInfo.department_id=departmentInfo.id",
          function (err, res) {
         if (err) throw err;
         console.table(res)
