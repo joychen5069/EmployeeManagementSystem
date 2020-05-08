@@ -145,8 +145,7 @@ addEmployee = () => {
             title: answer.role,
             manager: answer.manager
         }, (err) => {
-            if (err)
-                throw err;
+            if (err) throw err;
             console.log("added successfully");
             // re-prompt
             userChoice();
@@ -177,15 +176,11 @@ removeEmployee = () => {
         ])
             //now actually delete them
             .then((answer) => {
-
-                let fullName = answer.name
-                console.log(fullName)
-                let remove = fullName.split(" ")
-                console.log(remove[0])
+                let fullName = answer.name;
+                let remove = fullName.split(" ");
 
                 connection.query(
                     `DELETE FROM employeeInfo WHERE first_name = "${remove[0]}" AND last_name = "${remove[1]}"`,
-
                     (err) => {
                         if (err) throw err;
                         console.log("removed successfully");
@@ -425,7 +420,7 @@ addRole = () => {
                     },
                     (err) => {
                         if (err) throw err;
-                        // console.log(" successfully");
+                        console.log("added role successfully");
                         // re-prompt
                         userChoice();
                     }
@@ -433,7 +428,6 @@ addRole = () => {
             })
     })
 }
-
 
 //run a switch statement to switch between them all
 select = (answers) => {
