@@ -16,11 +16,18 @@ const connection = mysql.createConnection({
 //connect to mysql server and sql database 
 connection.connect((err) => {
     if (err) throw err;
-    initial();
+    start();
 })
 
+start = () => {
+    //only display the thing once
+
+    //then ask question
+    userChoice();
+}
+
 //prompt question about what the user wants to do
-initial = async () => {
+userChoice = async () => {
     const answer = await inquirer.prompt([
         {
             type: "list",
@@ -28,14 +35,14 @@ initial = async () => {
             message: "What would you like to do?",
             choices: [
                 "View All Employees",
-                // "View All Employees by Manager",
+                "View All Employees by Manager",
                 "View Department Table",
                 "View Role Table",
                 "Add Employee",
                 "Add Department",
                 "Add Role",
                 "Update Employee Role",
-                // "Update Employee Manager",
+                "Update Employee Manager",
                 "Remove Employee",
                 "Finish"
             ]
@@ -52,43 +59,46 @@ viewAll = async () => {
         (err, res) => {
             if (err) throw err;
             console.table(res)
-            initial();
+            userChoice();
         })
 }
 
 //user function wants to view all employees by manager--THIS FUNCTION DOES NOT WORK YET
-// viewEmpByMan = async () => {
-//     connection.query("SELECT * FROM roleInfo", 
-//     (err, res) => {
-//         if (err) throw err
+viewEmpByMan = async () => {
+    connection.query("SELECT * FROM roleInfo", 
+    (err, res) => {
+        if (err) throw err
 
-//         //ask what manager they want to view
-//         inquirer.prompt([
-//             {
-//                 type: "list",
-//                 name: "manager",
-//                 message: "Pick a manager to view the employees:",
-//                 choices: () => {
-//                     let choiceArray = [];
-//                     for (let i = 0; i < res.length; i++) {
-//                         choiceArray.push(res[i].manager);
-//                     }
-//                     return choiceArray;
-//                 }
-//             }
-//         ])
-//             .then((answer) => {
-//                 connection.query(`SELECT * FROM employeeInfo WHERE manager = "${answer.manager}"`,
-//                     (err, res) => {
-//                         if (err) throw err;
+        //ask what manager they want to view
+        inquirer.prompt([
+            {
+                type: "list",
+                name: "manager",
+                message: "Pick a manager to view the employees:",
+                choices: () => {
+                    let choiceArray = [];
+                    for (let i = 0; i < res.length; i++) {
+                        choiceArray.push(res[i].manager);
+                    }
+                    return choiceArray;
+                }
+            }
+        ])
+            .then((answer) => {
+                const manager = res.find(el => el.manager === answer.manager)
 
-//                         console.table(res)
+                console.log(manager)
+                connection.query(`SELECT * FROM employeeInfo WHERE id = "${manager.id}"`,
+                    (err, res) => {
+                        if (err) throw err;
 
-//                         initial();
-//                     })
-//             })
-//     })
-// }
+                        console.table(res)
+
+                        userChoice();
+                    })
+            })
+    })
+}
 
 //user function wants to ADD EMPLOYEE
 addEmployee = () => {
@@ -139,7 +149,7 @@ addEmployee = () => {
                 throw err;
             console.log("added successfully");
             // re-prompt
-            initial();
+            userChoice();
         });
     })
 };
@@ -180,7 +190,7 @@ removeEmployee = () => {
                         if (err) throw err;
                         console.log("removed successfully");
                         // re-prompt
-                        initial();
+                        userChoice();
                     }
                 )
             })
@@ -245,7 +255,7 @@ updateRole = () => {
                                     if (err) throw err;
                                     console.log("added successfully");
                                     // re-prompt
-                                    initial();
+                                    userChoice();
                                 }
                             )
                         })
@@ -258,7 +268,7 @@ updateRole = () => {
                             if (err) throw err;
                             console.log("added successfully");
                             // re-prompt
-                            initial();
+                            userChoice();
                         }
                     )
                 }
@@ -266,57 +276,81 @@ updateRole = () => {
     })
 }
 
-//user function wants to UPDATE Employee MANAGER--THIS FUNCTION DOES NOT WORK YET
-// updateManager = () => {
-//     //pull all the employees first
-//     connection.query("SELECT * FROM employeeInfo", (err, res) => {
-//         if (err) throw err
 
-//         //ask who they want to modify
-//         inquirer.prompt([
-//             {
-//                 type: "list",
-//                 name: "name",
-//                 message: "Which employee would you like to update the manager of?",
-//                 choices: () => {
-//                     let choiceArray = [];
-//                     for (let i = 0; i < res.length; i++) {
-//                         choiceArray.push(res[i].first_name + " " + res[i].last_name);
-//                     }
-//                     return choiceArray;
-//                 }
-//             },
-
-//             {
-//                 type: "list",
-//                 name: "manager",
-//                 message: "What is the ID of the new manager?",
-//                 choices: [
-//                     0, 1, 2, 3, 4, 5
-//                 ]
-//             }
-//         ])
-//             // now modify them
-//             .then((answer) => {
-//                 //split the name
-//                 let fullName = answer.name;
-//                 console.log(fullName);
-//                 let splitName = fullName.split(" ");
-//                 console.log(splitName[0]);
-
-//                 connection.query(
-//                     `UPDATE employeeInfo SET manager = "${answer.manager}" WHERE first_name = "${splitName[0]}" and last_name = "${splitName[1]}"`,
-
-//                     (err) => {
-//                         if (err) throw err;
-//                         console.log("updated successfully");
-//                         // re-prompt
-//                         initial();
-//                     }
-//                 )
-//             })
+// let managerArray = []
+// const getManager =  async () => {
+//     let choiceArray = []
+//     managerArray = connection.query("SELECT DISTINCT manager FROM roleInfo", (err, res) => {
+//         if (err) throw err;
+   
+//     for (let i = 0; i < res.length; i++) {
+//         managerArray.push(res[i])
+        
+//     }
+//     return choiceArray
+        
 //     })
 // }
+
+// getManager();
+
+// console.log(managerArray)
+
+//user function wants to UPDATE Employee MANAGER--THIS FUNCTION DOES NOT WORK YET
+updateManager = () => {
+    //pull all the employees first
+    connection.query("SELECT * FROM employeeInfo LEFT JOIN roleInfo ON employeeInfo.title=roleInfo.title", (err, res) => {
+        if (err) throw err
+
+        //ask who they want to modify
+        inquirer.prompt([
+            {
+                type: "list",
+                name: "name",
+                message: "Which employee would you like to update the manager of?",
+                choices: () => {
+                    let choiceArray = [];
+                    for (let i = 0; i < res.length; i++) {
+                        choiceArray.push(res[i].first_name + " " + res[i].last_name);
+                    }
+                    return choiceArray;
+                }
+            },
+
+            {
+                type: "list",
+                name: "manager",
+                message: "Who is the new manager?",
+                choices: () => {
+                    let choiceArray = [];
+                    for (let i = 0; i < res.length; i++) {
+                        choiceArray.push(res[i].manager);
+                    }
+                    return choiceArray;
+                }
+            }
+        ])
+            // now modify them
+            .then((answer) => {
+                //split the name
+                let fullName = answer.name;
+                console.log(fullName);
+                let splitName = fullName.split(" ");
+                console.log(splitName[0]);
+
+                connection.query(
+                    `UPDATE employeeInfo SET manager = "${answer.manager}" WHERE first_name = "${splitName[0]}" and last_name = "${splitName[1]}"`,
+
+                    (err) => {
+                        if (err) throw err;
+                        console.log("updated successfully");
+                        // re-prompt
+                        userChoice();
+                    }
+                )
+            })
+    })
+}
 
 //user function wants to view all departments
 viewAllDepartment = () => {
@@ -324,7 +358,7 @@ viewAllDepartment = () => {
         "SELECT * FROM departmentInfo", (err, res) => {
             if (err) throw err;
             console.table(res);
-            initial();
+            userChoice();
         }
     )
 }
@@ -335,7 +369,7 @@ viewAllRoles = () => {
         "SELECT * FROM roleInfo", (err, res) => {
             if (err) throw err;
             console.table(res);
-            initial();
+            userChoice();
         }
     )
 }
@@ -356,7 +390,7 @@ addDepartment = () => {
                     if (err) throw err;
                     console.log("added successfully");
                     // re-prompt
-                    initial();
+                    userChoice();
                 }
             )
         })
@@ -377,7 +411,7 @@ addRole = () => {
             {
                 type: "input",
                 name: "salary",
-                message: "What is the starting salary of this position?"
+                message: "What is the userChoiceing salary of this position?"
             },
 
             {
@@ -413,7 +447,7 @@ addRole = () => {
                         if (err) throw err;
                         // console.log(" successfully");
                         // re-prompt
-                        initial();
+                        userChoice();
                     }
                 )
             })
@@ -432,10 +466,10 @@ select = (answers) => {
             break;
 
         //view Manager
-        // case ("View All Employees by Manager"):
-        //     console.log("View All Employees by Manager");
-        //     viewEmpByMan();
-        //     break;
+        case ("View All Employees by Manager"):
+            console.log("View All Employees by Manager");
+            viewEmpByMan();
+            break;
 
 
         //View Department
@@ -469,10 +503,10 @@ select = (answers) => {
             break;
 
         //Update Manager
-        // case ("Update Employee Manager"):
-        //     console.log("Update Employee Manager");
-        //     updateManager();
-        //     break;
+        case ("Update Employee Manager"):
+            console.log("Update Employee Manager");
+            updateManager();
+            break;
 
         //Add Department
         case ("Add Department"):
@@ -493,4 +527,16 @@ select = (answers) => {
     }
 }
 
-// module.exports = initial;
+// logo = () => {
+// "\
+//   ______                 _                          \  
+//   |  ____|               | |                           \
+//   | |__   _ __ ___  _ __ | | ___  _   _  ___  ___  ___ \
+//   |  __| | '_ ` _ \| '_ \| |/ _ \| | | |/ _ \/ _ \/ __|\
+//   | |____| | | | | | |_) | | (_) | |_| |  __/  __/\__ \\
+//   |______|_| |_| |_| .__/|_|\___/ \__, |\___|\___||___/\
+//                    | |             __/ |               \
+//                    |_|            |___/                \
+//  \
+// "
+// }
