@@ -1,7 +1,7 @@
 USE employee_db;
 
 INSERT INTO employeeInfo (first_name, last_name, title, manager)
-VALUES ("Joe", "Exotic","Software Engineer", 1);
+VALUES ("Joe", "Exotic","Software Engineer", 2), ("Sally", "Jones", "Lawyer", 4), ("Kevin", "Johnson", "Lead Engineer", 2), ("Avery", "Williams", "Sales Team", 3), ("Maeve", "Roberts", "Accountant", 1);
 
 INSERT INTO departmentInfo(department)
 VALUES("Finance"),("Engineering"),("Sales"),("Legal");
