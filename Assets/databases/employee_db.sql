@@ -5,12 +5,12 @@ CREATE DATABASE employee_db;
 USE employee_db;
 
 CREATE TABLE employeeInfo(
-    id INT NOT NULL AUTO_INCREMENT,
+    employee_id INT NOT NULL AUTO_INCREMENT,
     first_name VARCHAR(50) NOT NULL,
     last_name VARCHAR (50) NOT NULL,
     title VARCHAR(50) NOT NULL,
     manager INT,
-    PRIMARY KEY (id)
+    PRIMARY KEY (employee_id)
 );
 
 CREATE TABLE departmentInfo(
