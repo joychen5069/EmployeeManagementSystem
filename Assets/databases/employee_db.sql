@@ -9,8 +9,9 @@ CREATE TABLE employeeInfo(
     first_name VARCHAR(50) NOT NULL,
     last_name VARCHAR (50) NOT NULL,
     title VARCHAR(50) NOT NULL,
-    manager INT,
+    manager_id INT,
     PRIMARY KEY (employee_id)
+    CONSTRAINT fk_manager FOREIGN KEY manager_id REFERENCES roleInfo(id)
 );
 
 CREATE TABLE departmentInfo(
@@ -25,6 +26,7 @@ CREATE TABLE roleInfo(
     salary DECIMAL,
     manager VARCHAR(30) NOT NULL,
     department_id INT NOT NULL,
-    PRIMARY KEY (id)
+    PRIMARY KEY (id),
+    CONSTRAINT fk_department FOREIGN KEY department_id REFERENCES departmentInfo(id)
     );
 
