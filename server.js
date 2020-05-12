@@ -42,7 +42,7 @@ userChoice = async () => {
                 "Add Department",
                 "Add Role",
                 "Update Employee Role",
-                "Update Employee Manager",
+                // "Update Employee Manager",
                 "Remove Employee",
                 "Finish"
             ]
@@ -198,7 +198,7 @@ updateRole = () => {
     connection.query("SELECT * FROM employeeInfo", (err, res) => {
         if (err) throw err
         console.table(res)
-        
+
         //ask who they want to modify
         inquirer.prompt([
             {
@@ -214,7 +214,7 @@ updateRole = () => {
                 }
             },
 
-            
+
         ])
             // now modify them
             .then((answer) => {
@@ -223,7 +223,7 @@ updateRole = () => {
                 console.log(fullName);
                 let splitName = fullName.split(" ");
                 console.log(splitName[0]);
-                connection.query("SELECT * FROM roleInfo", (err,res) => {
+                connection.query("SELECT * FROM roleInfo", (err, res) => {
                     inquirer.prompt([
                         {
                             type: "list",
@@ -239,30 +239,31 @@ updateRole = () => {
                         }
 
                     ])
-                    .then((result) => {
-                        const role = result.role
-                        connection.query(
-                            `UPDATE employeeInfo SET title = "${role}" WHERE first_name = "${splitName[0]}" and last_name = "${splitName[1]}"`,
-                            // [ {title: answer.role}     ]
-                            (err) => {
-                                if (err) throw err;
-                                console.log("added successfully");
-                                // re-prompt
-                                userChoice();
-                            }
-                        )
-                    })
-                }) 
-                        
+                        .then((result) => {
+                            const role = result.role
+                            connection.query(
+                                `UPDATE employeeInfo SET title = "${role}" WHERE first_name = "${splitName[0]}" and last_name = "${splitName[1]}"`,
+                                // [ {title: answer.role}     ]
+                                (err) => {
+                                    if (err) throw err;
+                                    console.log("added successfully");
+                                    // re-prompt
+                                    userChoice();
+                                }
+                            )
+                        })
                 })
-                }
-            )}
-    
+
+            })
+    }
+    )
+}
+
 
 //user function wants to UPDATE Employee MANAGER--THIS FUNCTION DOES NOT WORK YET
 // updateManager = () => {
 //     //pull all the employees first
-//     connection.query("SELECT * FROM employeeInfo, roleInfo", (err, res) => {
+//     connection.query("SELECT * FROM employeeInfo", (err, res) => {
 //         if (err) throw err
 
 //         //ask who they want to modify
@@ -278,19 +279,6 @@ updateRole = () => {
 //                     }
 //                     return choiceArray;
 //                 }
-//             },
-
-//             {
-//                 type: "list",
-//                 name: "manager",
-//                 message: "Who is the new manager?",
-//                 choices: () => {
-//                     let choiceArray = [];
-//                     for (let i = 0; i < res.length; i++) {
-//                         choiceArray.push(res[i].manager);
-//                     }
-//                     return choiceArray;
-//                 }
 //             }
 //         ])
 //             // now modify them
@@ -300,17 +288,36 @@ updateRole = () => {
 //                 console.log(fullName);
 //                 let splitName = fullName.split(" ");
 //                 console.log(splitName[0]);
+//                 connection.query('SELECT * FROM roleInfo', (err, res) {
+//                     inquirer.prompt([
+//                         {
+//                             type: "list",
+//                             name: "manager",
+//                             message: "Who is the new manager?",
+//                             choices: () => {
+//                                 let choiceArray = [];
+//                                 for (let i = 0; i < res.length; i++) {
+//                                     choiceArray.push(res[i].manager);
+//                                 }
+//                                 return choiceArray;
+//                             }
+//                         }
+//                     ])
+//                     .then((result) => {
+//                         connection.query(
+//                             `UPDATE employeeInfo SET manager = "${answer.manager_id}" WHERE first_name = "${splitName[0]}" and last_name = "${splitName[1]}"`,
+        
+//                             (err) => {
+//                                 if (err) throw err;
+//                                 console.log("updated successfully");
+//                                 // re-prompt
+//                                 userChoice();
+//                             }
+//                         )
+//                     })
+//                 })
 
-//                 connection.query(
-//                     `UPDATE employeeInfo SET manager = "${answer.manager_id}" WHERE first_name = "${splitName[0]}" and last_name = "${splitName[1]}"`,
-
-//                     (err) => {
-//                         if (err) throw err;
-//                         console.log("updated successfully");
-//                         // re-prompt
-//                         userChoice();
-//                     }
-//                 )
+                
 //             })
 //     })
 // }

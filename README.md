@@ -38,7 +38,7 @@ Then all you need to do is open up your terminal and run
 As you can see, there are many additional features that can be added. This application is constantly being updated and as of May 11th, 2020, I am working on creating features that allow you to remove departments, remove roles, update managers, and view employees by managers so please keep checking my application for updates. 
 
 ## Demo
-![Demo](assets/demo/demo.gif)
+![Demo](Assets/demo/demo.gif)
 
 ## Questions
   
