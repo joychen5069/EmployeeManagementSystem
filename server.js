@@ -195,8 +195,9 @@ removeEmployee = () => {
 //user function wants to UPDATE Employee ROLE
 updateRole = () => {
     //pull all the employees first
-    connection.query("SELECT * FROM employeeInfo", (err, res) => {
+    connection.query("SELECT * FROM roleInfo, employeeInfo", (err, res) => {
         if (err) throw err
+        console.table(res)
 
         //ask who they want to modify
         inquirer.prompt([
