@@ -4,15 +4,7 @@ CREATE DATABASE employee_db;
 
 USE employee_db;
 
-CREATE TABLE employeeInfo(
-    employee_id INT NOT NULL AUTO_INCREMENT,
-    first_name VARCHAR(50) NOT NULL,
-    last_name VARCHAR (50) NOT NULL,
-    title VARCHAR(50) NOT NULL,
-    manager_id INT,
-    PRIMARY KEY (employee_id)
-    CONSTRAINT fk_manager FOREIGN KEY manager_id REFERENCES roleInfo(id)
-);
+
 
 CREATE TABLE departmentInfo(
 	id INT NOT NULL auto_increment,
@@ -26,7 +18,15 @@ CREATE TABLE roleInfo(
     salary DECIMAL,
     manager VARCHAR(30) NOT NULL,
     department_id INT NOT NULL,
-    PRIMARY KEY (id),
-    CONSTRAINT fk_department FOREIGN KEY department_id REFERENCES departmentInfo(id)
+    PRIMARY KEY (id)
     );
+    
+    CREATE TABLE employeeInfo(
+    employee_id INT NOT NULL AUTO_INCREMENT,
+    first_name VARCHAR(50) NOT NULL,
+    last_name VARCHAR (50) NOT NULL,
+    title VARCHAR(50) NOT NULL,
+    manager_id INT,
+    PRIMARY KEY (employee_id)  
+);
 

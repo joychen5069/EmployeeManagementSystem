@@ -42,7 +42,7 @@ userChoice = async () => {
                 "Add Department",
                 "Add Role",
                 "Update Employee Role",
-                // "Update Employee Manager",
+                "Update Employee Manager",
                 "Remove Employee",
                 "Finish"
             ]
@@ -143,7 +143,7 @@ addEmployee = () => {
             first_name: answer.first,
             last_name: answer.last,
             title: answer.role,
-            manager: answer.manager
+            manager_id: answer.manager
         }, (err) => {
             if (err) throw err;
             console.log("added successfully");
@@ -195,10 +195,10 @@ removeEmployee = () => {
 //user function wants to UPDATE Employee ROLE
 updateRole = () => {
     //pull all the employees first
-    connection.query("SELECT * FROM roleInfo, employeeInfo", (err, res) => {
+    connection.query("SELECT * FROM employeeInfo", (err, res) => {
         if (err) throw err
         console.table(res)
-
+        
         //ask who they want to modify
         inquirer.prompt([
             {
@@ -214,18 +214,7 @@ updateRole = () => {
                 }
             },
 
-            {
-                type: "list",
-                name: "role",
-                message: "What would you like to update the role to be?",
-                choices: () => {
-                    let choiceArray = ["Add Role"];
-                    for (let i = 0; i < res.length; i++) {
-                        choiceArray.push(res[i].title);
-                    }
-                    return choiceArray;
-                }
-            }
+            
         ])
             // now modify them
             .then((answer) => {
@@ -234,48 +223,46 @@ updateRole = () => {
                 console.log(fullName);
                 let splitName = fullName.split(" ");
                 console.log(splitName[0]);
-
-                if (answer.role === "Add Role") {
+                connection.query("SELECT * FROM roleInfo", (err,res) => {
                     inquirer.prompt([
                         {
-                            type: "input",
-                            name: "newRole",
-                            message: "What is the new role?"
-                        }
-                    ])
-                        .then((result) => {
-                            connection.query(
-                                `UPDATE employeeInfo SET title = "${result.newRole}" WHERE first_name = "${splitName[0]}" AND last_name = "${splitName[1]}"`,
-                                // [ {title: result.newRole}  ]   
-                                (err) => {
-                                    if (err) throw err;
-                                    console.log("added successfully");
-                                    // re-prompt
-                                    userChoice();
+                            type: "list",
+                            name: "role",
+                            message: "What would you like to update the role to be?",
+                            choices: () => {
+                                let choiceArray = [];
+                                for (let i = 0; i < res.length; i++) {
+                                    choiceArray.push(res[i].title);
                                 }
-                            )
-                        })
-                }
-                else {
-                    connection.query(
-                        `UPDATE employeeInfo SET title = "${answer.role}" WHERE first_name = "${splitName[0]}" and last_name = "${splitName[1]}"`,
-                        // [ {title: answer.role}     ]
-                        (err) => {
-                            if (err) throw err;
-                            console.log("added successfully");
-                            // re-prompt
-                            userChoice();
+                                return choiceArray;
+                            }
                         }
-                    )
+
+                    ])
+                    .then((result) => {
+                        const role = result.role
+                        connection.query(
+                            `UPDATE employeeInfo SET title = "${role}" WHERE first_name = "${splitName[0]}" and last_name = "${splitName[1]}"`,
+                            // [ {title: answer.role}     ]
+                            (err) => {
+                                if (err) throw err;
+                                console.log("added successfully");
+                                // re-prompt
+                                userChoice();
+                            }
+                        )
+                    })
+                }) 
+                        
+                })
                 }
-            })
-    })
-}
+            )}
+    
 
 //user function wants to UPDATE Employee MANAGER--THIS FUNCTION DOES NOT WORK YET
 // updateManager = () => {
 //     //pull all the employees first
-//     connection.query("SELECT * FROM employeeInfo LEFT JOIN roleInfo ON employeeInfo.title=roleInfo.title", (err, res) => {
+//     connection.query("SELECT * FROM employeeInfo, roleInfo", (err, res) => {
 //         if (err) throw err
 
 //         //ask who they want to modify
@@ -315,7 +302,7 @@ updateRole = () => {
 //                 console.log(splitName[0]);
 
 //                 connection.query(
-//                     `UPDATE employeeInfo SET manager = "${answer.manager}" WHERE first_name = "${splitName[0]}" and last_name = "${splitName[1]}"`,
+//                     `UPDATE employeeInfo SET manager = "${answer.manager_id}" WHERE first_name = "${splitName[0]}" and last_name = "${splitName[1]}"`,
 
 //                     (err) => {
 //                         if (err) throw err;
