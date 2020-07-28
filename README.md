@@ -42,4 +42,4 @@ As you can see, there are many additional features that can be added. This appli
 
 ## Questions
   
-If you see any improvements that can be made, please email me at joychen5069@gmail.com. You can also visit my GitHub page at https://github.com/joychen5069 or visit the Date Night page at https://github.com/joychen5069/EmployeeManagementSystem
+If you see any improvements that can be made, please email me at joychen5069@gmail.com. You can also visit my GitHub page at https://github.com/joychen5069 or visit the GitHub page at https://github.com/joychen5069/EmployeeManagementSystem
